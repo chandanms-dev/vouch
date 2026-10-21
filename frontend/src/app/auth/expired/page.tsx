@@ -1,22 +1,15 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { useApp } from "@/components/providers";
 import { ClockIcon } from "@/components/ui/icons";
 import { IllustrationTile } from "@/components/ui/primitives";
 
 export default function ExpiredPage() {
-  return (
-    <Suspense fallback={null}>
-      <Expired />
-    </Suspense>
-  );
-}
-
-function Expired() {
   const router = useRouter();
-  const email = useSearchParams().get("email") ?? "";
+  const { pendingEmail: email } = useApp();
   const [busy, setBusy] = useState(false);
 
   async function resend() {
@@ -24,7 +17,7 @@ function Expired() {
     setBusy(true);
     try {
       await api.auth.requestMagicLink(email);
-      router.push(`/auth/check-email?email=${encodeURIComponent(email)}`);
+      router.push("/auth/check-email");
     } catch {
       setBusy(false);
     }

@@ -8,30 +8,30 @@ import { VouchCardBody, type CardData } from "@/components/ui/cards";
 import { AuthorPill, Logo, TagPill } from "@/components/ui/primitives";
 import { cn } from "@/lib/format";
 
-const PAST_LIVES: CardData = {
-  kind: "film", title: "Past Lives", meta: "Film · 2023 · Celine Song",
-  review: "Two people, one life each, and one very long walk. I did not expect to cry on a Tuesday.",
-  tags: ["slow-burn", "romance"], rating: 9, author: "Maya", timeLabel: "2d ago",
-};
-const PIRANESI: CardData = {
-  kind: "book", title: "Piranesi", meta: "Book · 2020 · Susanna Clarke",
-  review: "A house of endless halls and tides, narrated by the sweetest man alive. Read it blind, then message me.",
-  tags: ["cosy-weird", "fantasy"], rating: 10, author: "Dev", timeLabel: "2d ago",
+const SEVERANCE: CardData = {
+  kind: "tv", title: "Severance", meta: "TV · 2022 · Dan Erickson",
+  review: "Office horror that is really about grief. Do not read anything about it first.",
+  tags: ["mind-bending", "slow-burn"], rating: 9, author: "Maya", timeLabel: "2d ago",
 };
 const FRIEREN: CardData = {
-  kind: "anime", title: "Frieren", meta: "Anime · 2023 · Madhouse",
+  kind: "anime", title: "Frieren: Beyond Journey's End", meta: "Anime · 2023 · Madhouse",
   review: "An elf outlives her friends and then goes to learn who they were. Quietly devastating, weirdly funny.",
-  tags: ["cry-trip", "fantasy"], rating: 9, author: "Priya", timeLabel: "4d ago",
+  tags: ["cry-trip", "found-family"], rating: 10, author: "Dev", timeLabel: "2d ago",
 };
-const BAKERY: CardData = {
-  kind: "place", title: "Blue Door Bakery", meta: "Place · Lisbon · Alfama",
-  review: "Go before 9am for the pastel de nata still warm. Tiny, loud, worth the stairs.",
-  tags: ["breakfast", "hidden-gem"], rating: 8, author: "Sam", timeLabel: "3d ago",
+const BOCCHI: CardData = {
+  kind: "anime", title: "Bocchi the Rock!", meta: "Anime · 2022 · CloverWorks",
+  review: "Painfully relatable and the funniest thing I watched all year.",
+  tags: ["feel-good", "short"], rating: 9, author: "Priya", timeLabel: "4d ago",
 };
-const PIRANESI_FOF: CardData = {
-  kind: "book", title: "Piranesi", meta: "Book · 2020 · Susanna Clarke",
-  review: "Dense at first, then I read it twice. Go in blind.",
-  tags: ["cosy-weird", "rewatch"], rating: 8, author: "Arjun", via: "Dev", timeLabel: "1w ago",
+const BEAR: CardData = {
+  kind: "tv", title: "The Bear", meta: "TV · 2022 · Christopher Storer",
+  review: "Loud kitchen, tender centre. Season two is the one.",
+  tags: ["feel-good", "intense"], rating: 8, author: "Sam", timeLabel: "3d ago",
+};
+const FRIEREN_FOF: CardData = {
+  kind: "anime", title: "Frieren: Beyond Journey's End", meta: "Anime · 2023 · Madhouse",
+  review: "Slow at first, then I watched it twice. Go in blind.",
+  tags: ["slow-burn", "rewatch"], rating: 9, author: "Arjun", via: "Dev", timeLabel: "1w ago",
 };
 
 function scrollTo(id: string) {
@@ -77,7 +77,7 @@ function Hero() {
           Taste you can trust.
         </h1>
         <p className="mt-6 max-w-[420px] text-base leading-6 md:text-lg md:leading-7">
-          Vouch is where your friends, and their friends, drop the films, books, anime and places they actually loved.
+          Vouch is where your friends, and their friends, drop the TV shows and anime they actually loved.
           Every one comes with a name.
         </p>
         <div className="mt-8 flex flex-col gap-3 md:flex-row">
@@ -92,15 +92,15 @@ function Hero() {
 
       {/* Mobile: two stacked cards */}
       <div aria-hidden className="relative h-[580px] md:hidden">
-        <VouchCardBody data={PAST_LIVES} className="absolute left-0 top-2 w-[300px] -rotate-6" />
-        <VouchCardBody data={PIRANESI} className="absolute right-0 top-[310px] w-[310px] rotate-3" />
+        <VouchCardBody data={SEVERANCE} className="absolute left-0 top-2 w-[300px] -rotate-6" />
+        <VouchCardBody data={FRIEREN} className="absolute right-0 top-[310px] w-[310px] rotate-3" />
       </div>
       {/* Desktop: four-card collage */}
       <div aria-hidden className="relative hidden h-[640px] md:block">
-        <VouchCardBody compact data={PAST_LIVES} className="absolute left-0 top-[40px] w-[240px] -rotate-6" />
-        <VouchCardBody compact data={PIRANESI} className="absolute right-0 top-0 w-[240px] rotate-[-7deg]" />
-        <VouchCardBody compact data={FRIEREN} className="absolute left-[14px] top-[320px] w-[250px] -rotate-6" />
-        <VouchCardBody compact data={BAKERY} className="absolute right-[6px] top-[340px] w-[240px] -rotate-3" />
+        <VouchCardBody compact data={SEVERANCE} className="absolute left-0 top-[40px] w-[240px] -rotate-6" />
+        <VouchCardBody compact data={FRIEREN} className="absolute right-0 top-0 w-[240px] rotate-[-7deg]" />
+        <VouchCardBody compact data={BOCCHI} className="absolute left-[14px] top-[320px] w-[250px] -rotate-6" />
+        <VouchCardBody compact data={BEAR} className="absolute right-[6px] top-[340px] w-[240px] -rotate-3" />
       </div>
     </section>
   );
@@ -143,8 +143,8 @@ function HowItWorks() {
           </p>
           <span className="mt-5 inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-extrabold text-cream">Me too</span>
           <div className="mt-3 flex flex-col items-start gap-2">
-            <TagPill>because I loved Past Lives</TagPill>
-            <TagPill>because I loved Piranesi</TagPill>
+            <TagPill>because I loved Severance</TagPill>
+            <TagPill>because I loved Frieren</TagPill>
           </div>
         </article>
       </div>
@@ -168,11 +168,11 @@ function Path() {
         </div>
         <div className="grid gap-6 md:grid-cols-2 md:items-start md:gap-4">
           <figure>
-            <VouchCardBody data={PIRANESI} />
+            <VouchCardBody data={FRIEREN} />
             <figcaption className="mt-3 text-sm text-muted">A friend: Dev. Solid, full colour, just his name.</figcaption>
           </figure>
           <figure>
-            <VouchCardBody data={PIRANESI_FOF} />
+            <VouchCardBody data={FRIEREN_FOF} />
             <figcaption className="mt-3 text-sm text-muted">
               A friend of a friend: Arjun, via Dev. Quieter, with the path shown.
             </figcaption>
@@ -211,7 +211,7 @@ function Code() {
   }
 
   const field =
-    "h-14 w-full rounded-full bg-cream px-6 text-base text-ink outline-none placeholder:text-ink/50 focus-visible:ring-2 focus-visible:ring-ink";
+    "h-14 w-full rounded-full bg-cream px-6 text-base text-ink outline-none placeholder:text-ink/65 focus-visible:ring-2 focus-visible:ring-ink";
   return (
     <section id="code" className="scroll-mt-4 bg-lime text-ink">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-14 md:grid-cols-[1fr_1fr] md:items-center md:px-20 md:py-24">

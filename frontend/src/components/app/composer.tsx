@@ -264,7 +264,7 @@ function RateStep({
               aria-pressed={rating === n}
               onClick={() => setRating(n)}
               className={cn(
-                "press focus-ring flex aspect-square items-center justify-center rounded-full border-2 border-cream font-display text-xl font-extrabold",
+                "press focus-ring flex aspect-square items-center justify-center rounded-full border-2 border-muted font-display text-xl font-extrabold",
                 rating === n ? "bg-cream text-ink" : "text-cream",
               )}
             >

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn, initial } from "@/lib/format";
 import { KIND, type VisualKind } from "./kind";
@@ -99,9 +100,31 @@ export function ScoreBadge({ value, size = "lg", tilted = true }: { value: numbe
   );
 }
 
-/** "Maya" on friend cards, "Arjun · via Dev" (dashed) on friend-of-friend cards. */
-export function AuthorPill({ name, via, size = "md" }: { name: string; via?: string; size?: "md" | "sm" }) {
+/**
+ * "Maya" on friend cards, "Arjun · via Dev" (dashed) on friend-of-friend cards.
+ * With `href` / `viaHref` the author and the via friend link to their profiles.
+ */
+export function AuthorPill({
+  name,
+  via,
+  href,
+  viaHref,
+  size = "md",
+}: {
+  name: string;
+  via?: string;
+  href?: string;
+  viaHref?: string;
+  size?: "md" | "sm";
+}) {
   const fof = !!via;
+  const linkCls = "focus-ring relative z-10 rounded-full hover:underline underline-offset-2";
+  const who = (
+    <>
+      <Avatar name={name} size="sm" tone={fof ? "ink" : "cream"} />
+      <span>{name}</span>
+    </>
+  );
   return (
     <span
       className={cn(
@@ -110,11 +133,23 @@ export function AuthorPill({ name, via, size = "md" }: { name: string; via?: str
         fof ? "border-2 border-dashed border-ink bg-cream text-ink" : "bg-ink text-cream",
       )}
     >
-      <Avatar name={name} size="sm" tone={fof ? "ink" : "cream"} />
-      <span>{name}</span>
+      {href ? (
+        <Link href={href} className={cn(linkCls, "inline-flex items-center gap-2")}>
+          {who}
+        </Link>
+      ) : (
+        <span className="inline-flex items-center gap-2">{who}</span>
+      )}
       {via && (
         <span className="font-semibold">
-          <span aria-hidden>· </span>via {via}
+          <span aria-hidden>· </span>via{" "}
+          {viaHref ? (
+            <Link href={viaHref} className={linkCls}>
+              {via}
+            </Link>
+          ) : (
+            via
+          )}
         </span>
       )}
     </span>

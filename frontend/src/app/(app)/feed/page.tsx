@@ -209,10 +209,10 @@ function QuietFeed({ onVouch }: { onVouch: () => void }) {
   }
 
   const frames = [
-    { k: "film", cls: "left-1 top-8 h-[88px] w-[150px] border-lavender -rotate-3", badge: "bg-lavender", label: "Film" },
-    { k: "book", cls: "right-3 top-0 h-[92px] w-[136px] border-lime rotate-3", badge: "bg-lime", label: "Book" },
+    { k: "tv", cls: "left-1 top-8 h-[88px] w-[150px] border-lavender -rotate-3", badge: "bg-lavender", label: "TV" },
+    { k: "anime-2", cls: "right-3 top-0 h-[92px] w-[136px] border-pink rotate-3", badge: "bg-pink", label: "Anime" },
     { k: "anime", cls: "left-20 top-[104px] h-[92px] w-[138px] border-pink -rotate-2", badge: "bg-pink", label: "Anime" },
-    { k: "place", cls: "right-0 top-[88px] h-[86px] w-[142px] border-sky rotate-1", badge: "bg-sky", label: "Place" },
+    { k: "tv-2", cls: "right-0 top-[88px] h-[86px] w-[142px] border-lavender rotate-1", badge: "bg-lavender", label: "TV" },
   ];
 
   return (

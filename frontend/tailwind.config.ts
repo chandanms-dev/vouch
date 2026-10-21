@@ -1,21 +1,21 @@
 import type { Config } from "tailwindcss";
 
-// Tokens sampled from docs/design exports; see docs/design/tokens.md.
+// Tokens from docs/Foundations.pdf (Figma names in comments); see docs/design/tokens.md.
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        ink: "#0E1633",
-        surface: "#1A2550",
-        raised: "#2A376E",
+        ink: "#0E1633", // Ground (ink 900); also text on fields
+        surface: "#1A2550", // Surface (ink 800)
+        raised: "#2A376E", // Surface high (ink 700)
         edge: "#263163",
-        cream: "#FBF7EC",
-        muted: "#B9C1DD",
-        lavender: "#B9A7FF",
-        lime: "#C8F23D",
-        pink: "#FF9FD0",
-        sky: "#84D0FF",
+        cream: "#FBF7EC", // Paper
+        muted: "#B9C1DD", // Mist / muted text
+        lavender: "#B9A7FF", // color/field/film (Shows field)
+        lime: "#C8F23D", // color/field/book
+        pink: "#FF9FD0", // color/field/anime
+        sky: "#84D0FF", // color/field/place
       },
       fontFamily: {
         display: ["var(--font-bricolage)", "system-ui", "sans-serif"],

@@ -91,9 +91,22 @@ function requireViewer(): User {
   return u;
 }
 
-/** Dev helper: stands in for the link in the email the backend would send. */
+/** Opaque one-time tokens, as the backend would issue: token -> email. */
+const magicTokens = new Map<string, string>();
+const latestTokenByEmail = new Map<string, string>();
+
+function issueToken(email: string): string {
+  const clean = email.trim().toLowerCase();
+  const token = `mock-${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+  magicTokens.set(token, clean);
+  latestTokenByEmail.set(clean, token);
+  return token;
+}
+
+/** Dev helper: stands in for the link in the email the backend would send. The URL carries only the opaque token. */
 export function devMagicLinkToken(email: string, state: "valid" | "expired" = "valid"): string {
-  return state === "expired" ? "expired" : `mock.${encodeURIComponent(email.trim().toLowerCase())}`;
+  if (state === "expired") return "expired";
+  return latestTokenByEmail.get(email.trim().toLowerCase()) ?? "invalid";
 }
 
 // ---------- graph helpers ----------
@@ -119,7 +132,7 @@ function personFor(viewer: string, id: string): PersonRef | null {
   if (id === viewer) return { id, handle: u.handle, name: u.name };
   if (areFriends(viewer, id)) return { id, handle: u.handle, name: u.name };
   const via = viaFriend(viewer, id);
-  if (via) return { id, handle: u.handle, name: u.name, via: { id: via.id, name: via.name } };
+  if (via) return { id, handle: u.handle, name: u.name, via: { id: via.id, handle: via.handle, name: via.name } };
   return null; // stranger: never exposed
 }
 
@@ -164,12 +177,14 @@ export const mockApi: VouchApi = {
     async requestMagicLink(email) {
       await wait(500);
       if (!/^\S+@\S+\.\S+$/.test(email.trim())) throw new ApiError("invalid", "Enter a valid email");
+      issueToken(email);
     },
     async verifyMagicLink(token) {
       await wait(500);
       if (token === "expired") throw new ApiError("token_expired");
-      if (!token.startsWith("mock.")) throw new ApiError("token_invalid");
-      const email = decodeURIComponent(token.slice(5));
+      const email = magicTokens.get(token);
+      if (!email) throw new ApiError("token_invalid");
+      magicTokens.delete(token); // links work once
       const user = userForEmail(email);
       viewerId = user.id;
       storeEmail(email);
@@ -464,7 +479,7 @@ export const mockApi: VouchApi = {
       return {
         relation: "fof",
         user: { id: user.id, handle: user.handle, name: user.name },
-        via: { id: via.id, name: firstName(via.name) },
+        via: { id: via.id, handle: via.handle, name: firstName(via.name) },
         sharedTags: shared,
         eligibility,
         requestState,

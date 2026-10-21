@@ -6,6 +6,7 @@ import { useEffect, type ReactNode } from "react";
 import { useApp, useAuth } from "@/components/providers";
 import { PlusIcon } from "@/components/ui/icons";
 import { Avatar, ComingSoon, Logo } from "@/components/ui/primitives";
+import { ScrollTop } from "@/components/app/scroll-top";
 import { cn } from "@/lib/format";
 
 const NAV = [
@@ -74,6 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
+      {hideTabs && <ScrollTop id={path} />}
       <main className={hideTabs ? "pb-10 md:pb-12" : "pb-32 md:pb-12"}>{children}</main>
 
       {/* Mobile tab bar */}

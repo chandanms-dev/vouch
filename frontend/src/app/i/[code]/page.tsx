@@ -58,7 +58,7 @@ export default function InvitePage() {
         {inviter.name} invited you to Vouch.
       </h1>
       <p className="mt-4 text-muted">
-        Films, books, anime and places, recommended by people you actually know. Join {inviter.name} and see what they
+        TV shows and anime, recommended by people you actually know. Join {inviter.name} and see what they
         have vouched for.
       </p>
       <div aria-hidden className="relative mt-8 h-[320px]">

@@ -1,15 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { api, ApiError, type ShowDetail } from "@/lib/api";
 import { useApp, useAuth } from "@/components/providers";
 import { useAsync } from "@/hooks/use-async";
 import { VouchCard } from "@/components/ui/cards";
-import { BackButton, Skeleton, TagPill, TypeBadge } from "@/components/ui/primitives";
+import { Avatar, BackButton, Skeleton, TagPill, TypeBadge } from "@/components/ui/primitives";
 import { KIND } from "@/components/ui/kind";
 import { ErrorState } from "@/components/app/states";
-import { Avatar } from "@/components/ui/primitives";
-import { cn, joinNames } from "@/lib/format";
+import { cn } from "@/lib/format";
 
 export default function ShowPage() {
   const { id } = useParams<{ id: string }>();
@@ -50,7 +50,6 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
   const k = KIND[show.kind];
   const total = d.friendCount + d.fofCount;
   const everyone = [...d.direct, ...d.fof];
-  const watchWith = d.direct.slice(0, 2).map((v) => v.author.name.split(" ")[0]!);
   const meta = `${k.label} · ${show.year} · ${show.kind === "anime" ? "Studio" : "By"} ${show.credit}`;
   const cta = d.myVouch ? "Update your vouch" : "Add your vouch";
 
@@ -155,16 +154,18 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
                     {everyone.map((v) => {
                       const fof = !!v.author.via;
                       return (
-                        <li
-                          key={v.vouch.id}
-                          className={cn(
-                            "inline-flex h-9 items-center gap-2 rounded-full bg-cream pl-1 pr-3 text-sm font-bold text-ink",
-                            fof && "border-2 border-dashed border-ink",
-                          )}
-                        >
-                          <Avatar name={v.author.name} size="sm" tone={fof ? "ink" : "cream"} className={fof ? "" : "ring-1 ring-ink/20"} />
-                          {v.author.name.split(" ")[0]}
-                          <span className="font-display text-base font-extrabold">{v.vouch.rating}</span>
+                        <li key={v.vouch.id}>
+                          <Link
+                            href={`/u/${v.author.handle}`}
+                            className={cn(
+                              "press focus-ring inline-flex h-9 items-center gap-2 rounded-full bg-cream pl-1 pr-3 text-sm font-bold text-ink",
+                              fof && "border-2 border-dashed border-ink",
+                            )}
+                          >
+                            <Avatar name={v.author.name} size="sm" tone={fof ? "ink" : "cream"} className={fof ? "" : "ring-1 ring-ink/20"} />
+                            {v.author.name.split(" ")[0]}
+                            <span className="font-display text-base font-extrabold">{v.vouch.rating}</span>
+                          </Link>
                         </li>
                       );
                     })}
@@ -189,17 +190,6 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
               >
                 {cta}
               </button>
-            </section>
-
-            <section className="rounded-[28px] bg-surface p-6">
-              <h2 className="font-display text-2xl font-extrabold leading-7">
-                {watchWith.length > 0 ? `Watch it with ${joinNames(watchWith)}?` : "Watch it with friends?"}
-              </h2>
-              <p className="mt-2 text-muted">Start a plan, pick a night, and everyone who vouched gets the invite.</p>
-              <button type="button" disabled className="btn-outline mt-4 w-full">
-                Make a plan
-              </button>
-              <p className="mt-2 text-center text-[11px] font-bold text-lime">Coming soon</p>
             </section>
           </div>
           <div>{sections("grid-cols-2")}</div>

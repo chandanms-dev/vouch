@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { api, ApiError, type Profile } from "@/lib/api";
@@ -137,10 +138,10 @@ function FriendOfFriend({ p, onChange }: { p: Extract<Profile, { relation: "fof"
       <h1 className="mt-6 font-display text-[44px] font-extrabold leading-[48px] tracking-tight">{p.user.name}</h1>
       <p className="mt-4 flex items-center gap-2 text-base font-extrabold">
         via
-        <span className="inline-flex items-center gap-2 text-sm font-bold">
+        <Link href={`/u/${p.via.handle}`} className="press focus-ring inline-flex items-center gap-2 rounded-full text-sm font-bold hover:underline">
           <Avatar name={p.via.name} size="sm" />
           {p.via.name}
-        </span>
+        </Link>
       </p>
 
       <h2 className="mt-10 font-display text-2xl font-extrabold">Taste you share</h2>
