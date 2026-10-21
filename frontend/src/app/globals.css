@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0e1633;
+  color: #fbf7ec;
+}
+
+body {
+  font-family: var(--font-nunito), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer components {
+  /* Press feedback on anything pressable */
+  .press {
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      background-color 160ms ease, opacity 160ms ease;
+  }
+  .press:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn {
+    @apply press inline-flex h-[52px] items-center justify-center rounded-full px-6 text-base font-extrabold;
+  }
+  .btn-primary {
+    @apply btn bg-cream text-ink;
+  }
+  .btn-outline {
+    @apply btn border-2 border-cream bg-transparent text-cream;
+  }
+  .btn-sm {
+    @apply h-9 px-4 text-sm;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .focus-ring:focus-visible,
+  .btn:focus-visible {
+    outline: 2px solid #c8f23d;
+    outline-offset: 3px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover:not(:disabled) {
+    background-color: #fff;
+  }
+  .btn-outline:hover:not(:disabled) {
+    background-color: rgba(251, 247, 236, 0.08);
+  }
+}
+
+/* Reduced motion: keep fades, drop movement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+  .press:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  scrollbar-width: none;
+}
