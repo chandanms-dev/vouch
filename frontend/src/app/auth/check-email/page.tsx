@@ -1,23 +1,22 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api, devMagicLinkToken } from "@/lib/api";
+import { useApp } from "@/components/providers";
 import { MailIcon } from "@/components/ui/icons";
 import { IllustrationTile } from "@/components/ui/primitives";
 
 export default function CheckEmailPage() {
-  return (
-    <Suspense fallback={null}>
-      <CheckEmail />
-    </Suspense>
-  );
-}
-
-function CheckEmail() {
   const router = useRouter();
-  const email = useSearchParams().get("email") ?? "";
+  // The email lives in memory only, never in the URL. A refresh loses it, so start over.
+  const { pendingEmail: email } = useApp();
   const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!email) router.replace("/sign-in");
+  }, [email, router]);
+  if (!email) return null;
 
   async function resend() {
     try {
@@ -35,7 +34,7 @@ function CheckEmail() {
       </IllustrationTile>
       <h1 className="mt-16 font-display text-[40px] font-extrabold leading-[44px] tracking-tight">Check your email.</h1>
       <p className="mt-4 text-muted">
-        We sent a magic link to {email || "your email"}. Tap it on this phone and you are in. It expires in 15 minutes.
+        We sent a magic link to {email}. Tap it on this phone and you are in. It expires in 15 minutes.
       </p>
       <div className="mt-auto pt-10">
         {/* Prototype: stands in for opening the link from the email. A real build opens the mail app. */}
@@ -64,7 +63,7 @@ function CheckEmail() {
           <button
             type="button"
             className="underline underline-offset-4"
-            onClick={() => router.push(`/auth/verify?token=expired&email=${encodeURIComponent(email)}`)}
+            onClick={() => router.push("/auth/verify?token=expired")}
           >
             simulate an expired link
           </button>

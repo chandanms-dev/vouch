@@ -23,7 +23,6 @@ function Verify() {
     if (ran.current) return; // links work once
     ran.current = true;
     const token = params.get("token") ?? "";
-    const email = params.get("email") ?? "";
     api.auth.verifyMagicLink(token).then(
       (s) => {
         setUser(s.user);
@@ -31,7 +30,7 @@ function Verify() {
       },
       (e) => {
         const expired = e instanceof ApiError && (e.code === "token_expired" || e.code === "token_invalid");
-        router.replace(expired ? `/auth/expired?email=${encodeURIComponent(email)}` : "/sign-in");
+        router.replace(expired ? "/auth/expired" : "/sign-in");
       },
     );
   }, [params, router, setUser]);

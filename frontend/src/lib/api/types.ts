@@ -33,7 +33,7 @@ export interface PersonRef {
   id: string;
   handle: string;
   name: string;
-  via?: { id: string; name: string };
+  via?: { id: string; handle: string; name: string };
 }
 
 export interface VouchView {
@@ -94,7 +94,7 @@ export type Profile =
       relation: "fof";
       // Friends of friends expose only name, avatar (initial), via and shared tags.
       user: Pick<User, "id" | "handle" | "name">;
-      via: { id: string; name: string };
+      via: { id: string; handle: string; name: string };
       sharedTags: string[];
       eligibility: Eligibility;
       requestState: "none" | "incoming" | "outgoing";

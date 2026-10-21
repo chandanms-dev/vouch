@@ -13,8 +13,8 @@
 
 **Open issues**
 1. **Foundations** (`docs/Foundations.pdf`) confirmed all colours and added contrast rules (applied). It has no type scale, radii or hover/disabled states, so those stay estimated; see `docs/design/tokens.md` "Still unconfirmed".
-2. **Design vs MVP scope.** Exports show Film, Book and Place cards, chips and copy (landing, invite, splash, empty feed). Shows-only data is used in the app; the illustrations and landing/invite copy follow the export as drawn. Decide whether to redraw them for Shows (TV = lavender, Anime = pink). Feed filter chips are All / TV / Anime (export: All / Film / Book / Anime / Place).
-3. No export for: Edit profile, Make a plan (button shown disabled), desktop auth/invite screens (mobile layout used, centred), desktop Friends/Me/profile (follow the feed/detail pattern), Sign out (added on Me for the prototype), profile taste-tag highlighting (shared = cream, others = muted).
+2. **Design vs MVP scope.** Landing, sign-in, invite and empty-feed examples now show TV and anime only (Frieren, Severance, The Bear, Bocchi). Film, Book and Food remain only as disabled "Coming soon" chips in the composer. The exports still draw Film/Book/Place; the Figma file should be updated to match. Feed filter chips are All / TV / Anime.
+3. No export for: Edit profile, desktop auth/invite screens (mobile layout used, centred), desktop Friends/Me/profile (follow the feed/detail pattern), Sign out (added on Me for the prototype), profile taste-tag highlighting (shared = cream, others = muted).
 4. Impeccable audit (390 and 1440), report only, nothing fixed:
    - P1: sheets have no focus trap and the page behind is not inert. Close and Back targets are under 44px (chips 32px, Back 40px, tags/small buttons 28-36px).
    - P1: reduced-motion CSS uses a global 1ms duration kill; no intentional alternative.
@@ -24,6 +24,14 @@
    - P2: CSS-column masonry reflows when more feed items load.
    - P3: `will-change-transform` left on the sheet at rest; a few hard-coded hex values in `globals.css`; detector "straggler" advisories on landing copy.
 5. Mock data only: no real TMDB, email or persistence.
+
+## Session 2: fixes on `init-frontend`
+
+- Author names and "via" tags link to profiles (stretched card link on the title keeps links un-nested); "Who rated it" chips link too. All mock handles open: friends full, FoF name/avatar/via/shared tags only, strangers not found.
+- Shows-only copy and examples on sign-in, landing, invite, empty feed.
+- Show and profile screens open scrolled to the top.
+- Removed "Make a plan" (Plans deferred).
+- Email no longer in the check-email URL; held in memory (refresh returns to sign-in). Magic-link tokens are opaque and single-use in the mock.
 
 ## Next session
 Backend Story 1 (setup). Hand-written by the user; Claude explains and reviews only.

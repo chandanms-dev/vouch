@@ -17,6 +17,9 @@ interface AppCtx {
   openComposer: (opts?: { show?: Show }) => void;
   openMeToo: (a: AnticipationView) => void;
   notify: (message: string) => void;
+  /** Email a magic link was requested for. Held in memory so it never travels in a URL. */
+  pendingEmail: string;
+  setPendingEmail: (email: string) => void;
   /** Bumped whenever the viewer changes data (post a vouch, Me too) so lists refetch. */
   version: number;
 }
@@ -37,6 +40,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthCtx["status"]>("loading");
   const [version, setVersion] = useState(0);
+  const [pendingEmail, setPendingEmail] = useState("");
   const [composer, setComposer] = useState<{ open: boolean; show?: Show }>({ open: false });
   const [meToo, setMeToo] = useState<{ open: boolean; item: AnticipationView | null }>({ open: false, item: null });
   const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
@@ -64,8 +68,8 @@ export function Providers({ children }: { children: ReactNode }) {
 
   const auth = useMemo(() => ({ status, user, setUser }), [status, user, setUser]);
   const app = useMemo(
-    () => ({ openComposer, openMeToo, notify, version }),
-    [openComposer, openMeToo, notify, version],
+    () => ({ openComposer, openMeToo, notify, pendingEmail, setPendingEmail, version }),
+    [openComposer, openMeToo, notify, pendingEmail, version],
   );
 
   return (
