@@ -12,13 +12,13 @@
 **Prototype tips**: sign in as `chandan@email.com` for the full network; any other email gives an empty ("quiet") feed. "Open email app" simulates tapping the link; "simulate an expired link" shows the expired screen. Invite code example: `maya-4TLF`. Data resets on reload except the session.
 
 **Open issues**
-1. **Foundations export missing** from `docs/design/`. Colours were sampled from pixels; type sizes, radii and hover/disabled states are estimates. See `docs/design/tokens.md` "Needs confirmation".
+1. **Foundations** (`docs/Foundations.pdf`) confirmed all colours and added contrast rules (applied). It has no type scale, radii or hover/disabled states, so those stay estimated; see `docs/design/tokens.md` "Still unconfirmed".
 2. **Design vs MVP scope.** Exports show Film, Book and Place cards, chips and copy (landing, invite, splash, empty feed). Shows-only data is used in the app; the illustrations and landing/invite copy follow the export as drawn. Decide whether to redraw them for Shows (TV = lavender, Anime = pink). Feed filter chips are All / TV / Anime (export: All / Film / Book / Anime / Place).
 3. No export for: Edit profile, Make a plan (button shown disabled), desktop auth/invite screens (mobile layout used, centred), desktop Friends/Me/profile (follow the feed/detail pattern), Sign out (added on Me for the prototype), profile taste-tag highlighting (shared = cream, others = muted).
 4. Impeccable audit (390 and 1440), report only, nothing fixed:
    - P1: sheets have no focus trap and the page behind is not inert. Close and Back targets are under 44px (chips 32px, Back 40px, tags/small buttons 28-36px).
    - P1: reduced-motion CSS uses a global 1ms duration kill; no intentional alternative.
-   - P2: placeholder contrast on cream inputs is 3.3:1 (needs 4.5:1).
+   - P2: placeholder contrast on cream inputs (fixed after Foundations: ink at 65%).
    - P2: heading order: landing and mobile feed go h1/none to h3 (cards); mobile feed has no h1.
    - P2: landing/sign-in collages use fixed pixel widths and overflow below about 360px.
    - P2: CSS-column masonry reflows when more feed items load.

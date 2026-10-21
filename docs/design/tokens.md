@@ -1,17 +1,17 @@
 # Design tokens
 
-> **Source caveat.** The "Foundations" export is not in `docs/design/`, so none of these values were read from a spec. Colours were **sampled pixel-exact** from the component and screen PNGs (dominant fill colours). Fonts were named in the brief. **Type sizes are measured estimates** from the 390px and 1440px exports and must be confirmed against Foundations (see "Needs confirmation").
+> **Source.** Colours are confirmed against `docs/Foundations.pdf` (they match the values first sampled from the PNGs). Foundations contains only colour and contrast; it has **no type scale, radii or interaction states**, so those remain measured estimates (see "Still unconfirmed").
 
 ## Colour
 
 | Token | Hex | Where it appears |
 | --- | --- | --- |
-| `ink` | `#0E1633` | App background, text on coloured cards |
+| `ink` | `#0E1633` | Foundations "Ground" (ink 900). App background, text on coloured cards |
 | `surface` | `#1A2550` | Sidebar, tab bar, FoF card fill, sheets, list rows |
-| `raised` | `#2A376E` | Inputs, active nav pill, tag pills on dark, skeleton blocks |
+| `raised` | `#2A376E` | Foundations "Surface high" (ink 700).  Inputs, active nav pill, tag pills on dark, skeleton blocks |
 | `edge` | `#263163` | Subtle hairlines on dark (minor) |
-| `cream` | `#FBF7EC` | Primary buttons, score badge, light tag pills, avatar |
-| `muted` | `#B9C1DD` | Secondary text on dark (sampled) |
+| `cream` | `#FBF7EC` | Foundations "Paper".  Primary buttons, score badge, light tag pills, avatar |
+| `muted` | `#B9C1DD` | Foundations "Mist" / muted text. 9.93:1 on ground, 8.24:1 on surface, 6.28:1 on surface high |
 | `lavender` | `#B9A7FF` | **Shows field** (TV); formerly "Film" in the design |
 | `lime` | `#C8F23D` | Book field, "Coming soon" labels, count pills, Joined/invite card |
 | `pink` | `#FF9FD0` | Anime field |
@@ -47,9 +47,15 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 - Tag pills on profiles tilt +/-2deg.
 - Mobile gutter 16-24px. Desktop sidebar 240px, content max-width ~1160px.
 
-## Needs confirmation (Foundations missing)
+## Contrast rules from Foundations (applied)
 
-1. Exact type sizes/line heights and weights above.
-2. Muted text opacity/colour on dark (sampled `#B9C1DD`; used at lower opacity in places).
-3. Radius and shadow values (none visible; shadows assumed none).
-4. Hover/pressed/disabled colours (not shown in exports).
+- Placeholder on paper inputs: ink at 65% (5.42:1), not 50%.
+- Unselected composer score circles and Me-too rows: 2px mist outline (8.24:1).
+- FoF / anticipation outlines use the field colour on surface (7.04 to 11.39:1).
+- Film (lavender), Place (sky) and Anime (pink) are close in lightness: always pair colour with the glyph and word label.
+
+## Still unconfirmed (not in Foundations)
+
+1. Type sizes, line heights and weights above.
+2. Radius and shadow values (none visible; shadows assumed none).
+3. Hover/pressed/disabled colours.

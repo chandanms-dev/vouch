@@ -97,7 +97,7 @@ export function MeTooSheet({
                       onClick={() => setPicked(m.vouch.id)}
                       className={cn(
                         "press focus-ring flex w-full items-center gap-3 rounded-2xl border-2 p-3 text-left",
-                        selected ? cn(KIND[m.show.kind].field, "border-transparent text-ink") : "border-muted/50 bg-raised",
+                        selected ? cn(KIND[m.show.kind].field, "border-transparent text-ink") : "border-muted bg-raised",
                       )}
                     >
                       <span

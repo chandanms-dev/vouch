@@ -211,7 +211,7 @@ function Code() {
   }
 
   const field =
-    "h-14 w-full rounded-full bg-cream px-6 text-base text-ink outline-none placeholder:text-ink/50 focus-visible:ring-2 focus-visible:ring-ink";
+    "h-14 w-full rounded-full bg-cream px-6 text-base text-ink outline-none placeholder:text-ink/65 focus-visible:ring-2 focus-visible:ring-ink";
   return (
     <section id="code" className="scroll-mt-4 bg-lime text-ink">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-14 md:grid-cols-[1fr_1fr] md:items-center md:px-20 md:py-24">
