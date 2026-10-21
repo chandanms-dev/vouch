@@ -20,7 +20,7 @@ Recommendations from people you actually know. Vouch is an invite-only app where
 ```
 frontend/      Next.js app (prototype on mock API)
 backend/       Backend (empty for now)
-docs/          User stories (product behaviour only)
+docs/          User stories (product behaviour only) and Foundations.pdf (colour and contrast)
 docs/design/   Figma exports, the design source of truth, and tokens.md
 PROGRESS.md    Session-by-session progress log
 CLAUDE.md      Context for AI sessions

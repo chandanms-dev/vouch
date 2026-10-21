@@ -5,7 +5,7 @@
 **Done**
 - Private GitHub repo `vouch` created; `main` pushed.
 - Repo structure, `.gitignore`, README, CLAUDE.md. Figma exports in `docs/design/` (`components/`, `screens/`), user stories in `docs/`.
-- `docs/design/tokens.md` and Tailwind theme (colours sampled from the PNGs).
+- `docs/design/tokens.md` and Tailwind theme (colours since confirmed by `docs/Foundations.pdf`).
 - Frontend prototype (Next.js 14, TS strict, Tailwind) on a mock API behind one interface (`frontend/src/lib/api`): landing, sign-in, magic-link check/expired/verify, invite, feed (cursor pagination, filters, empty/loading/error), show detail, profiles (self/friend/FoF/stranger), friends (friends/requests/invite), me, composer sheet (2 steps), Me-too sheet, Spaces/Plans "Coming soon".
 - `npm run lint` and `npm run build` pass with zero errors.
 
@@ -32,6 +32,10 @@
 - Show and profile screens open scrolled to the top.
 - Removed "Make a plan" (Plans deferred).
 - Email no longer in the check-email URL; held in memory (refresh returns to sign-in). Magic-link tokens are opaque and single-use in the mock.
+
+## Git state
+
+Work is on `init-frontend` (branched from `userstory`), open as PR #1 into `main`. `main` still holds only the initial commit until that is merged.
 
 ## Next session
 Backend Story 1 (setup). Hand-written by the user; Claude explains and reviews only.

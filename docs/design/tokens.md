@@ -8,9 +8,9 @@
 | --- | --- | --- |
 | `ink` | `#0E1633` | Foundations "Ground" (ink 900). App background, text on coloured cards |
 | `surface` | `#1A2550` | Sidebar, tab bar, FoF card fill, sheets, list rows |
-| `raised` | `#2A376E` | Foundations "Surface high" (ink 700).  Inputs, active nav pill, tag pills on dark, skeleton blocks |
+| `raised` | `#2A376E` | Foundations "Surface high" (ink 700). Inputs, active nav pill, tag pills on dark, skeleton blocks |
 | `edge` | `#263163` | Subtle hairlines on dark (minor) |
-| `cream` | `#FBF7EC` | Foundations "Paper".  Primary buttons, score badge, light tag pills, avatar |
+| `cream` | `#FBF7EC` | Foundations "Paper". Primary buttons, score badge, light tag pills, avatar |
 | `muted` | `#B9C1DD` | Foundations "Mist" / muted text. 9.93:1 on ground, 8.24:1 on surface, 6.28:1 on surface high |
 | `lavender` | `#B9A7FF` | **Shows field** (TV); formerly "Film" in the design |
 | `lime` | `#C8F23D` | Book field, "Coming soon" labels, count pills, Joined/invite card |

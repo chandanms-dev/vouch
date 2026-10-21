@@ -8,7 +8,7 @@ Vouch is an invite-only recommendations app: you see vouches (rating /10 + short
 
 ## Rules
 - **Never write backend code unless the user asks.** Explain and review instead. The backend is hand-written by the user; the frontend is AI-assisted.
-- **`docs/design/` is the design source of truth** (Figma exports as PNG). Build screens from these only; never guess designs. If something is unclear, ask.
+- **`docs/design/` is the design source of truth** (Figma exports as PNG). Build screens from these only; never guess designs. If something is unclear, ask. Colours and contrast rules come from `docs/Foundations.pdf` (see `docs/design/tokens.md`).
 - `docs/VouchUserStories.pdf` / `VouchUserStoriesLive.txt` describe product behaviour only. Ignore their frontend design specs and timeline.
 - **Update `PROGRESS.md` at the end of every session.**
 - Frontend talks to the API only through `frontend/src/lib/api` (one interface, mock now, real later).
