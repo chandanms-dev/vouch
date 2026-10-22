@@ -99,7 +99,7 @@
 ## Session 9: Dependabot cleanup
 
 - `.github/dependabot.yml`: npm major bumps are ignored (`version-update:semver-major`). We stay on Next 14 / Tailwind 3 / TypeScript 5 / React 18 until after the backend MVP. The GitHub Actions ecosystem still receives majors.
-- Closed the npm major PRs (Tailwind 4, TypeScript 7, eslint-config-next 16, React DOM 19) as "Deferred". Actions bumps and npm minor/patch bumps were rebased and merged one at a time only when CI passed.
+- Closed the npm major PRs (Tailwind 4, TypeScript 7, eslint-config-next 16, React DOM 19) as "Deferred". Merged one at a time after a rebase and a green CI: #7 checkout 7, #8 setup-node 7, #9 upload-artifact 7 (only runs on failure, so CI does not exercise it), #10 @axe-core/playwright 4.14. The Node 20 action warning is gone.
 
 ## Known issues
 
