@@ -20,7 +20,7 @@ import * as seed from "./mock-data";
 /**
  * In-memory implementation of VouchApi. It enforces the visibility rules the
  * real backend must enforce (the UI never filters for privacy):
- *  - feed: direct friends only
+ *  - feed: two hops: direct friends, and friends of friends with `via` (anticipations from direct friends only)
  *  - friend-of-friend authors always carry `via`
  *  - friend-of-friend profiles expose name, via and shared tags only
  *  - strangers: not_found
@@ -356,10 +356,11 @@ export const mockApi: VouchApi = {
       await wait(150);
       const me = requireViewer();
       if (me.id !== seed.ME_ID) return [];
+      const daysAgo = (d: number) => new Date(Date.now() - d * 86_400_000).toISOString();
       return [
-        { id: "i1", name: "Maya Rao", status: "joined" as const, label: "Joined 3 weeks ago" },
-        { id: "i2", name: "Sam Okafor", status: "joined" as const, label: "Joined 2 weeks ago" },
-        { id: "i3", name: "Ana Duarte", status: "waiting" as const, label: "Not joined yet" },
+        { id: "i1", name: "Maya Rao", status: "joined" as const, sentAt: daysAgo(25), joinedAt: daysAgo(22) },
+        { id: "i2", name: "Sam Okafor", status: "joined" as const, sentAt: daysAgo(18), joinedAt: daysAgo(15) },
+        { id: "i3", name: "Ana Duarte", status: "waiting" as const, sentAt: daysAgo(4) },
       ];
     },
   },
@@ -389,9 +390,7 @@ export const mockApi: VouchApi = {
         .filter((r) => r.fromId === me.id)
         .flatMap((r) => {
           const user = personFor(me.id, r.toId);
-          const days = Math.floor((Date.now() - Date.parse(r.createdAt)) / 86_400_000);
-          const sentLabel = days < 1 ? "sent today" : `sent ${days} day${days === 1 ? "" : "s"} ago`;
-          return user ? [{ id: r.id, user, sentLabel }] : [];
+          return user ? [{ id: r.id, user, sentAt: r.createdAt }] : [];
         });
       return { incoming, outgoing };
     },
@@ -467,14 +466,16 @@ export const mockApi: VouchApi = {
       const direct = views.filter((v) => !v.author.via);
       const fof = views.filter((v) => !!v.author.via);
       const all = [...direct, ...fof];
-      const avg = all.length ? Math.round((all.reduce((s, v) => s + v.vouch.rating, 0) / all.length) * 10) / 10 : null;
+      const mean = (list: VouchView[]) =>
+        list.length ? Math.round((list.reduce((s, v) => s + v.vouch.rating, 0) / list.length) * 10) / 10 : null;
       const tagCounts = new Map<string, number>();
       all.forEach((v) => v.vouch.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1)));
       const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t]) => t);
       const mine = vouches.find((v) => v.showId === id && v.authorId === me.id);
       return {
         show,
-        friendsAverage: avg,
+        friendsAverage: mean(direct),
+        networkAverage: mean(all),
         friendCount: direct.length,
         fofCount: fof.length,
         direct,
@@ -491,8 +492,10 @@ export const mockApi: VouchApi = {
       const me = requireViewer();
       const show = showById(input.showId);
       const tags = validateVouchInput(input);
-      const existing = vouches.findIndex((v) => v.authorId === me.id && v.showId === show.id);
-      if (existing >= 0) vouches.splice(existing, 1);
+      if (vouches.some((v) => v.authorId === me.id && v.showId === show.id)) {
+        // Same as the real API: one vouch per show, change it with update().
+        throw new ApiError("conflict", "You already vouched for this show");
+      }
       const vouch: Vouch = {
         id: nextId("v"),
         authorId: me.id,
@@ -547,12 +550,12 @@ export const mockApi: VouchApi = {
       const me = requireViewer();
       if (opts?.kind && devFlag("empty") === opts.kind) return { items: [], nextCursor: null };
       const limit = opts?.limit ?? 6;
-      const direct = friendIds(me.id);
       const items: FeedItem[] = [];
       for (const v of vouches) {
-        if (!direct.includes(v.authorId)) continue; // feed is direct friends only
-        const view = toView(me.id, v);
-        if (view) items.push({ type: "vouch", id: v.id, createdAt: v.createdAt, vouch: view });
+        if (v.authorId === me.id) continue; // your own vouches are not in your feed
+        const view = toView(me.id, v); // null for strangers: the feed reaches two hops, no further
+        if (!view) continue;
+        items.push({ type: "vouch", id: v.id, createdAt: v.createdAt, relation: view.author.via ? "fof" : "friend", via: view.author.via, vouch: view });
       }
       for (const a of anticipations) {
         const view = anticipationView(me.id, a);

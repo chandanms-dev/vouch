@@ -52,15 +52,26 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
   const cta = d.myVouch ? "Update your vouch" : "Add your vouch";
 
   const average = (
-    <div className="flex items-center gap-3">
-      <span className="font-display text-[56px] font-extrabold leading-none tracking-tight md:text-[56px]">
-        {d.friendsAverage ?? "–"}
-      </span>
-      <div className="text-meta leading-4">
-        <p className="text-sm font-bold">friends’ average</p>
-        <p>
-          {d.friendCount} friend{d.friendCount === 1 ? "" : "s"} · {d.fofCount} friend{d.fofCount === 1 ? "" : "s"} of friends
-        </p>
+    <div>
+      <div className="flex items-center gap-3">
+        <span className="font-display text-[56px] font-extrabold leading-none tracking-tight md:text-[56px]">
+          {d.friendsAverage ?? "–"}
+        </span>
+        <div className="text-meta leading-4">
+          <p className="text-sm font-bold">friends’ average</p>
+          <p>
+            {d.friendCount} friend{d.friendCount === 1 ? "" : "s"}
+          </p>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <span className="font-display text-[28px] font-extrabold leading-none">{d.networkAverage ?? "–"}</span>
+        <div className="text-meta leading-4">
+          <p className="text-sm font-bold">network average</p>
+          <p>
+            with {d.fofCount} friend{d.fofCount === 1 ? "" : "s"} of friends
+          </p>
+        </div>
       </div>
     </div>
   );

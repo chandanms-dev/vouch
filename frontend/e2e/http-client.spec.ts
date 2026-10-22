@@ -29,6 +29,7 @@ function fakeServer() {
       s.validToken = `tok${s.refreshes + 1}`;
       return json(200, { accessToken: s.validToken, expiresIn: 900, user });
     }
+    if (url.endsWith("/auth/logout")) return new Response(null, { status: 204 });
     if (url.endsWith("/auth/magic-link/verify")) return json(200, { accessToken: "tok1", expiresIn: 900, user });
     if (headers.Authorization !== `Bearer ${s.validToken}`) return json(401, { code: "unauthenticated", message: "expired" });
     if (url.includes("/vouches/nope")) return json(404, { code: "not_found", message: "gone", traceId: "trace-9" });
@@ -96,4 +97,25 @@ test("getSession is null, and does not redirect, when there is no refresh cookie
   const api = createHttpApi("https://api.test", () => lost++);
   expect(await api.auth.getSession()).toBeNull();
   expect(lost).toBe(0);
+});
+
+test("signOut posts to /auth/logout and forgets the token", async () => {
+  const s = fakeServer();
+  const api = createHttpApi("/api", () => undefined);
+  await api.auth.verifyMagicLink("abc");
+  s.calls.length = 0;
+  await api.auth.signOut();
+  expect(s.calls.map((c) => `${c.method} ${c.url}`)).toEqual(["POST /api/auth/logout"]);
+  expect(s.calls[0]!.credentials).toBe("include");
+  s.calls.length = 0;
+  await api.friends.list(); // no token any more: goes straight to a refresh attempt, then the retry
+  expect(s.calls[0]!.auth).toBeUndefined();
+});
+
+test("calls the relative /api base so the app proxy keeps cookies first-party", async () => {
+  const s = fakeServer();
+  const api = createHttpApi("/api", () => undefined);
+  await api.auth.verifyMagicLink("abc");
+  await api.feed.page({ limit: 6, kind: "anime" });
+  expect(s.calls.at(-1)!.url).toBe("/api/feed?limit=6&kind=anime");
 });

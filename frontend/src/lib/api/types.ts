@@ -51,7 +51,16 @@ export interface AnticipationView {
 }
 
 export type FeedItem =
-  | { type: "vouch"; id: string; createdAt: string; vouch: VouchView }
+  | {
+      type: "vouch";
+      id: string;
+      createdAt: string;
+      /** "friend": a direct friend (solid card). "fof": a friend of a friend (dashed card, "via <friend>"). */
+      relation: "friend" | "fof";
+      /** Set exactly when relation is "fof"; the same value as `vouch.author.via`. */
+      via?: { id: string; handle: string; name: string };
+      vouch: VouchView;
+    }
   | { type: "anticipation"; id: string; createdAt: string; anticipation: AnticipationView };
 
 export interface FeedPage {
@@ -61,7 +70,10 @@ export interface FeedPage {
 
 export interface ShowDetail {
   show: Show;
+  /** Mean rating of direct friends' vouches, one decimal; null when no direct friend has vouched. */
   friendsAverage: number | null;
+  /** Mean rating of friends' and friends-of-friends' vouches together; null when nobody has vouched. */
+  networkAverage: number | null;
   friendCount: number;
   fofCount: number;
   direct: VouchView[];
@@ -111,7 +123,8 @@ export interface FriendRequest {
 
 export interface FriendRequests {
   incoming: FriendRequest[];
-  outgoing: (FriendRequest & { sentLabel: string })[];
+  /** `sentAt` is an ISO timestamp; the UI formats it ("sent 3 days ago"). */
+  outgoing: (FriendRequest & { sentAt: string })[];
 }
 
 export interface InvitePreview {
@@ -130,7 +143,9 @@ export interface SentInvite {
   id: string;
   name: string;
   status: "joined" | "waiting";
-  label: string;
+  /** ISO timestamps; the UI formats them ("Joined 3 weeks ago"). `joinedAt` only when status is "joined". */
+  sentAt: string;
+  joinedAt?: string;
 }
 
 export interface CreateVouchInput {

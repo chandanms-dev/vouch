@@ -118,3 +118,47 @@ test("the composer opens and finds a show", async ({ page }) => {
   await page.getByPlaceholder("Search TV and anime").fill("sev");
   await expect(page.getByRole("button", { name: /Severance/ })).toBeVisible();
 });
+
+test("the feed reaches two hops: friends solid, friends of friends dashed with a via tag, never your own vouches", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/feed");
+  const articles = page.locator("main article");
+  await expect(articles.first()).toBeVisible();
+  // Scroll until the feed says it is done, so every page of results has loaded.
+  for (let i = 0; i < 10 && !(await page.getByText("You are all caught up.").isVisible()); i++) {
+    await page.mouse.wheel(0, 5000);
+    await page.waitForTimeout(500);
+  }
+  await expect(page.getByText("You are all caught up.")).toBeVisible();
+  const fof = articles.filter({ hasText: /· via / });
+  expect(await fof.count()).toBeGreaterThan(0);
+  expect(await articles.filter({ hasNotText: /· via / }).count()).toBeGreaterThan(0);
+  await expect(fof.first()).toHaveClass(/border-2/); // the existing friend-of-friend card style
+  await expect(articles.locator('a[href="/me"]')).toHaveCount(0); // none of your own vouches
+});
+
+test("picking a show you already vouched for opens it in edit mode", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/feed");
+  await openComposer(page);
+  await page.getByPlaceholder("Search TV and anime").fill("sev");
+  await page.getByRole("button", { name: /Severance/ }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("heading", { name: "Edit your vouch for Severance" })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Save changes" })).toBeVisible();
+});
+
+test("show detail shows the friends' average and the network average", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/show/s_frieren");
+  // The show page renders a mobile and a desktop layout; only one is visible.
+  await expect(page.getByText("friends’ average").locator("visible=true").first()).toBeVisible();
+  await expect(page.getByText("network average").locator("visible=true").first()).toBeVisible();
+});
+
+test("friends page shows request and invite times as text", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/friends?tab=invite");
+  await expect(page.getByText(/Joined \d+ weeks? ago/).first()).toBeVisible();
+  await expect(page.getByText("Not joined yet")).toBeVisible();
+});

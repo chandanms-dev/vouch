@@ -41,7 +41,7 @@ export default function CheckEmailPage() {
         {isMockApi && (
           <button
             type="button"
-            onClick={() => router.push(`/auth/verify?token=${devMagicLinkToken(email)}`)}
+            onClick={async () => router.push(`/auth/verify?token=${await devMagicLinkToken(email)}`)}
             className="btn-primary w-full"
           >
             Open email app

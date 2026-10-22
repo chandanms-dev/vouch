@@ -1,4 +1,4 @@
-# Vouch API contract (v1, derived from the frontend mock)
+# Vouch API contract (v1.1)
 
 This is what `frontend/src/lib/api/http.ts` already calls. It was written from the mock in
 `frontend/src/lib/api/mock.ts` and the interface in `frontend/src/lib/api/types.ts` (`VouchApi`) as they are
@@ -8,7 +8,9 @@ today. If the backend needs to differ, change this file, `types.ts` and `http.ts
 components), but the UI must never be the thing that hides data: a response must not contain anything the caller
 is not allowed to see.
 
-- Base URL: `NEXT_PUBLIC_API_BASE_URL` (no trailing slash). All paths below are relative to it.
+- Base URL: paths below are relative to the API root. In the browser the client calls them under the same-origin
+  `/api` prefix (`/api/feed`, `/api/auth/refresh`, ...) and Next.js proxies `/api/*` to the backend
+  (`NEXT_PUBLIC_API_BASE_URL` is the backend's origin). See "Same-origin proxy" in section 2.
 - JSON in and out (`Content-Type: application/json`). Field names are camelCase. Ids are opaque strings.
 - Timestamps are ISO 8601 UTC strings (`"2026-10-22T09:30:00Z"`).
 - 24 endpoints. "Auth" = needs `Authorization: Bearer <access token>`.
@@ -84,12 +86,15 @@ underscores to `-`, characters outside `a-z0-9-` dropped, duplicates removed.
 | --- | --- |
 | Self | everything of their own |
 | Direct friend | full profile, all their vouches, author shown by name |
-| Friend of friend (FoF) | **only** `name`, avatar initial (derived from name), `via`, shared taste tags. Their vouches appear only on show pages, always with `via` |
+| Friend of friend (FoF) | **profile:** only `name`, avatar initial (derived from name), `via`, shared taste tags. **Vouches:** their vouches appear in the feed and on show pages, always labelled with `via` |
 | Anyone else (stranger) | does not exist: `404 not_found`, never `403` |
 
-- The **feed contains direct friends only** (plus anticipation cards built from direct friends).
-- Friend-of-friend vouches appear **only** in `GET /shows/{id}/network`, with `author.via` set. `via` is a friend
-  the viewer has in common with the author (if several, pick one deterministically).
+- The **feed is two-hop**: vouches by direct friends (`relation: "friend"`, solid card) and by friends of
+  friends (`relation: "fof"`, dashed card, "via <friend>"). Nobody further away, and never the viewer's own
+  vouches. Anticipation cards are built from direct friends only.
+- Friend-of-friend vouches also appear in `GET /shows/{id}/network`. Wherever one appears, `author.via` is set.
+  `via` is a friend the viewer has in common with the author (if several, pick one deterministically, and use
+  the same one everywhere).
 - A vouch is never returned to a viewer who is not at most two hops from its author.
 - "Add friend" may only succeed when the eligibility rule says `nominated: true` (below).
 - A "Me too" requires a vouch of the viewer's own as the link.
@@ -102,18 +107,34 @@ long-lived **refresh token** in an httpOnly cookie. The client never writes eith
 Refresh cookie, set by the server on verify and on every refresh (rotate it each time):
 
 ```
-Set-Cookie: vouch_refresh=<opaque>; HttpOnly; Secure; SameSite=Lax; Path=/auth/refresh; Max-Age=2592000
+Set-Cookie: vouch_refresh=<opaque>; HttpOnly; Secure; SameSite=Lax; Path=/auth; Max-Age=2592000
 ```
 
 - `HttpOnly`: not readable by script. `Secure`: HTTPS only (browsers also accept it on `http://localhost`).
-  `SameSite=Lax`. `Path=/auth/refresh`: the cookie is sent only to that path, so logout is `DELETE` on the same
-  path (otherwise the server could not see the cookie to revoke it).
+  `SameSite=Lax`. No `Domain` attribute (host-only cookie). `Path=/auth`: the cookie is sent only to the auth
+  endpoints, so both `POST /auth/refresh` and `POST /auth/logout` receive it and nothing else does.
+- **The `Path` is matched against the URL the browser requested.** Through the `/api` proxy that URL is
+  `/api/auth/refresh`, so with the proxy the backend must set `Path=/api/auth` (make the cookie path a setting:
+  `/auth` when the API is called directly at its root, `/api/auth` behind the proxy). A cookie with `Path=/auth`
+  would never be sent to `/api/auth/*`.
 - Store only a hash of the refresh token, rotate on use, and revoke the whole family if an old one is replayed.
-- **Deployment note:** `SameSite=Lax` cookies are not sent on cross-site `fetch` calls. The web app and the API
-  must be same-site (for example `app.example.com` and `api.example.com`, or the app proxying `/api` on its own
-  origin and `NEXT_PUBLIC_API_BASE_URL=/api`). `vouch-ecru.vercel.app` calling an API on another registrable
-  domain will not work. If they are same-site but cross-origin, the API needs CORS with the exact origin (not
-  `*`), `Access-Control-Allow-Credentials: true`, and `Authorization, Content-Type` allowed.
+### Same-origin proxy
+
+`next.config.mjs` rewrites `/api/:path*` to `${NEXT_PUBLIC_API_BASE_URL}/:path*` (an absolute origin such as
+`http://localhost:5080`; the build fails on anything else), and the real client calls the relative `/api` base.
+The browser therefore only ever talks to the app's own origin. Reasons:
+
+- **First-party cookie.** `SameSite=Lax` cookies are not sent on cross-site `fetch` calls. With the app on
+  `vouch-ecru.vercel.app` and an API on another domain the refresh cookie would never be sent. Through the proxy
+  the request is same-origin, so the cookie works, on any hosting, with no shared parent domain.
+- **No CORS.** No preflight requests, no `Access-Control-Allow-Credentials`, no origin allow-list to keep in sync.
+- **One public origin**, so the API host and port are not baked into client code or visible to users.
+
+The proxy passes `Set-Cookie` and the `Authorization` header through unchanged. It cannot rewrite cookies, which
+is why the cookie `Path` above must already include `/api`. The backend can still validate the `Origin` of
+state-changing requests for defence in depth. If the API is ever called cross-origin instead, it needs CORS
+with the exact origin (not `*`), `Access-Control-Allow-Credentials: true`, and a cookie that is sent cross-site
+(`SameSite=None; Secure`), which is a worse position: prefer the proxy.
 
 Client behaviour (implemented in `http.ts`): every request sends `credentials: "include"`. On a 401 from a
 protected endpoint it calls `POST /auth/refresh` once (shared by all requests in flight), then retries the
@@ -161,9 +182,10 @@ Not authenticated by header; authenticated by the refresh cookie. No body.
 to restore the session (it has no token yet), so a 401 here is normal for a signed-out visitor and must not be
 logged as an error.
 
-### 4. `DELETE /auth/refresh`
+### 4. `POST /auth/logout`
 
-Log out: revoke the refresh token and clear the cookie. No body, **204**. Idempotent (204 even without a cookie).
+Log out: revoke the refresh token (read from the cookie) and clear the cookie (`Set-Cookie` with `Max-Age=0` and
+the same `Path`). No body, **204**. Idempotent (204 even without a cookie). Not authenticated by header.
 
 ## 3. Waitlist and invites
 
@@ -195,11 +217,16 @@ creating an invite). Nothing else about the inviter's network.
 ### 8. `GET /invites/sent`  (auth)
 
 ```ts
-SentInvite[]  // { id: string; name: string; status: "joined" | "waiting"; label: string }
+interface SentInvite {
+  id: string; name: string;
+  status: "joined" | "waiting";
+  sentAt: string;       // ISO timestamp
+  joinedAt?: string;    // ISO timestamp; present when status is "joined"
+}
+SentInvite[]
 ```
 
-`label` is display text in the mock ("Joined 3 weeks ago", "Not joined yet"). See "Mock vs real": prefer
-returning `joinedAt` / `sentAt` and letting the client format.
+The client formats the times ("Joined 3 weeks ago", "Not joined yet"); the API returns no display text.
 
 ## 4. Friends
 
@@ -218,7 +245,7 @@ Unpaginated for the MVP (friend lists are small); add the cursor convention late
 ```ts
 {
   incoming: { id: string; user: PersonRef }[];
-  outgoing: { id: string; user: PersonRef; sentLabel: string }[];  // sentLabel: "sent today", "sent 3 days ago"
+  outgoing: { id: string; user: PersonRef; sentAt: string }[];  // sentAt: ISO timestamp; the client formats "sent 3 days ago"
 }
 ```
 
@@ -260,6 +287,11 @@ only when `nominated` is true, but the server must enforce it on endpoint 11 reg
 Show data comes from TMDB (TV and anime only in the MVP). The backend proxies and caches it; the browser never
 talks to TMDB or holds a TMDB key.
 
+**Show-kind rule.** `Show.kind` is derived, not stored: a TMDB TV series is **`"anime"` when its genres include
+Animation (genre id `16`) *and* its `origin_country` includes `JP`; otherwise it is `"tv"`**. So an American
+cartoon is `tv`, and a live-action Japanese drama is `tv`. Compute it once when a show is cached and use the same
+value in search, detail, vouches and the `kind` filters of `GET /feed` and `GET /shows/search`.
+
 ### 15. `GET /shows/search?q=&kind=`  (auth)
 
 ```ts
@@ -282,7 +314,8 @@ Everything the viewer may see about a show: their friends' vouches and, labelled
 ```ts
 interface ShowDetail {
   show: Show;
-  friendsAverage: number | null;  // mean rating, one decimal; null when nobody in the network vouched
+  friendsAverage: number | null;  // mean rating of DIRECT friends' vouches, one decimal; null when none
+  networkAverage: number | null;  // mean rating of direct friends + friends of friends together; null when none
   friendCount: number;            // direct friends who vouched
   fofCount: number;               // friends of friends who vouched
   direct: VouchView[];            // newest first; author without `via`
@@ -307,7 +340,8 @@ Vouch
 ```
 
 One vouch per user per show. If the viewer already has one for this show, return **409 `conflict`** (the client
-uses `PATCH` to change it). 404 for an unknown `showId`.
+changes it with `PATCH`; the composer looks the viewer's vouches up first and opens an existing one in edit mode,
+so a 409 only happens in a race). The mock behaves the same. 404 for an unknown `showId`.
 
 ### 19. `PATCH /vouches/{id}`  (auth, author only)
 
@@ -336,19 +370,26 @@ VouchView[]   // the viewer's vouches, newest first, unpaginated for the MVP
 
 ### 22. `GET /feed?cursor=&limit=&kind=`  (auth)
 
-The viewer's feed: vouches by **direct friends** and anticipation cards, newest first, paged. `kind` filters both
-vouches and anticipations by show kind.
+The viewer's two-hop feed: vouches by direct friends and by friends of friends, plus anticipation cards, newest
+first, paged. `kind` filters both vouches and anticipations by show kind.
 
 ```ts
 type FeedItem =
-  | { type: "vouch"; id: string; createdAt: string; vouch: VouchView }
+  | {
+      type: "vouch"; id: string; createdAt: string;
+      relation: "friend" | "fof";                                // friend: solid card. fof: dashed card
+      via?: { id: string; handle: string; name: string };        // present exactly when relation is "fof"; same as vouch.author.via
+      vouch: VouchView;
+    }
   | { type: "anticipation"; id: string; createdAt: string; anticipation: AnticipationView };
 // 200
 Page<FeedItem>
 ```
 
-- Vouches by the viewer themself and by friends of friends are **not** in the feed.
-- An anticipation card exists for an upcoming show when at least one direct friend is waiting on it (each
+- The UI shows a `friend` vouch with the author's name and a `fof` vouch as "author · via <friend>" on the dashed
+  card. `relation` and `via` must agree with `vouch.author` (`via` set iff `relation` is `fof`).
+- The viewer's own vouches are **not** in the feed. People more than two hops away never appear.
+- An anticipation card exists for an upcoming show when at least one **direct** friend is waiting on it (each
   friend's waiting entry must be backed by one of their vouches, "linked vouch"), or when the viewer joined.
 - A feed with no items is a valid 200 (`items: []`, `nextCursor: null`); the client shows a "your feed is quiet"
   state for the unfiltered case.
@@ -405,10 +446,11 @@ What the mock fakes or simplifies, and what the real backend must do differently
 | Latency and failures | Fixed `setTimeout` delays; `?fail=1`, `?fail=once`, `?fail=more`, `?empty=...` dev flags | Real network. The dev flags do not exist; the UI error states are reached by real failures |
 | Persistence | Whole state in `localStorage` (`vouch.demo.v1`); "Reset demo data" button | Database. The reset button is hidden when `NEXT_PUBLIC_API_BASE_URL` is set (the real client has no `demo`) |
 | Ids | Readable (`s_frieren`, `u_maya`, `v101`) | Opaque; show ids probably `tv:<tmdbId>`. The UI never parses ids |
-| Shows | A fixed catalogue of ~20 shows; `search` is a substring match | TMDB proxy with caching; kind (`tv` vs `anime`) is **derived** (e.g. TMDB TV + Japanese animation genre), not stored. Decide the rule |
-| Duplicate vouch | `POST /vouches` for a show you already vouched silently replaces it | 409 `conflict`; the client edits with `PATCH`. The composer's "search then pick an already-vouched show" path will show an error unless the UI is changed to open it in edit mode |
-| Display strings | `sentLabel` ("sent 3 days ago") and `SentInvite.label` ("Joined 3 weeks ago") are built in the mock | Better to return timestamps and format on the client; these two fields are the only presentation text in the DTOs |
-| Friends' average | Mean over direct **and** FoF vouches, though the field is called `friendsAverage` | Product decision: keep, or average direct friends only |
+| Shows | A fixed catalogue of ~20 shows with a hand-set `kind`; `search` is a substring match | TMDB proxy with caching; `kind` derived by the show-kind rule in section 5 |
+| Duplicate vouch | Same as real: 409 `conflict`. The composer opens an existing vouch in edit mode | Same |
+| Times | ISO timestamps (`sentAt`, `joinedAt`), formatted by the client | Same: the API returns no display text |
+| Averages | `friendsAverage` (direct) and `networkAverage` (direct + FoF), computed on read | Same definitions; may be cached |
+| Mock loading | `lib/api/mock` is imported lazily, on first call, and only when `NEXT_PUBLIC_API_BASE_URL` is unset; the production build omits it entirely when the variable is set | n/a |
 | `limit` / lists | Feed default 6; friends, `vouches/mine` and profile vouches are unpaginated | Same for the MVP; add cursors when lists get long |
 | Invite codes | `<handle>-<4 chars>`, parsed by regex; `mine` returns `<handle>-7QK2` always | Random, stored, expiring, single or multi use as decided |
 | Nomination | `eligibility` is a hard-coded table in `mock-data.ts` (who is nominated, and the `condition` text) | The real nomination rule (user stories). The `condition` string should be written for display |

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { api, type Show, type Vouch } from "@/lib/api";
+import { api, ApiError, type Show, type Vouch } from "@/lib/api";
 import { cn } from "@/lib/format";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
 import { ChevronRightIcon, CloseIcon, SearchIcon } from "@/components/ui/icons";
@@ -37,10 +37,26 @@ export function Composer({
   onPosted: (edited: boolean) => void;
 }) {
   const [show, setShow] = useState<Show | null>(null);
+  const [existing, setExisting] = useState<Vouch | undefined>();
 
   useEffect(() => {
-    if (open) setShow(initialShow ?? null);
-  }, [open, initialShow]);
+    if (open) {
+      setShow(initialShow ?? null);
+      setExisting(initialVouch);
+    }
+  }, [open, initialShow, initialVouch]);
+
+  /** One vouch per show: if the viewer already has one for the picked show, open it in edit mode. */
+  async function pick(s: Show) {
+    let found: Vouch | undefined;
+    try {
+      found = (await api.vouches.mine()).find((v) => v.show.id === s.id)?.vouch;
+    } catch {
+      /* treat as new; the server still refuses a duplicate */
+    }
+    setExisting(found);
+    setShow(s);
+  }
 
   return (
     <Sheet open={open} onClose={onClose} label="Add a vouch">
@@ -48,7 +64,7 @@ export function Composer({
         <RateStep
           key={show.id}
           show={show}
-          vouch={initialVouch?.showId === show.id ? initialVouch : undefined}
+          vouch={existing?.showId === show.id ? existing : undefined}
           onClose={onClose}
           onPosted={(edited) => {
             onPosted(edited);
@@ -56,13 +72,14 @@ export function Composer({
           }}
         />
       ) : (
-        <SearchStep onPick={setShow} onClose={onClose} />
+        <SearchStep onPick={pick} onClose={onClose} />
       )}
     </Sheet>
   );
 }
 
-function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: () => void }) {
+function SearchStep({ onPick, onClose }: { onPick: (s: Show) => Promise<void>; onClose: () => void }) {
+  const [picking, setPicking] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Show[] | null>(null);
   const [error, setError] = useState(false);
@@ -194,7 +211,11 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
               <li key={s.id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
                 <button
                   type="button"
-                  onClick={() => onPick(s)}
+                  disabled={picking}
+                  onClick={() => {
+                    setPicking(true);
+                    void onPick(s);
+                  }}
                   className="press focus-ring flex w-full items-center gap-4 rounded-2xl bg-raised p-2 text-left"
                 >
                   <span
@@ -266,7 +287,13 @@ function RateStep({
       else await api.vouches.create({ showId: show.id, rating, review, tags });
       onPosted(editing);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not post");
+      setError(
+        e instanceof ApiError && e.code === "conflict"
+          ? "You already have a vouch for this show. Close this and edit it from your profile."
+          : e instanceof Error
+            ? e.message
+            : "Could not post",
+      );
       setBusy(false);
     }
   }
