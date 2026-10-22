@@ -66,7 +66,8 @@ function storeEmail(email: string | null) {
 
 function userForEmail(email: string): User {
   const clean = email.trim().toLowerCase();
-  if (clean === seed.ME_EMAIL) return users.find((u) => u.id === seed.ME_ID)!;
+  // Prototype: any email gets the full demo network, except the empty-state address.
+  if (clean !== seed.EMPTY_EMAIL) return users.find((u) => u.id === seed.ME_ID)!;
   const local = clean.split("@")[0] ?? "you";
   const handle = local.replace(/[^a-z0-9]/g, "") || "you";
   const existing = users.find((u) => u.handle === handle && u.id.startsWith("u_new_"));

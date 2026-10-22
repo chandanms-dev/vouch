@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, PROTOTYPE_EMPTY_EMAIL } from "@/lib/api";
 import { useApp } from "@/components/providers";
 import { MiniCard } from "@/components/ui/cards";
 import { Logo } from "@/components/ui/primitives";
@@ -25,18 +25,22 @@ function SignIn() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  async function send(address: string) {
     setBusy(true);
     setError(null);
     try {
-      await api.auth.requestMagicLink(email, invite);
-      setPendingEmail(email.trim());
+      await api.auth.requestMagicLink(address, invite);
+      setPendingEmail(address.trim());
       router.push("/auth/check-email");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setBusy(false);
     }
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    void send(email);
   }
 
   return (
@@ -83,7 +87,15 @@ function SignIn() {
           </Link>
         </p>
         <p className="mt-3 text-center text-xs text-muted">
-          Prototype: sign in as chandan@email.com to see a full feed, or any other email for an empty one.
+          Prototype: any email opens the full demo feed.{" "}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void send(PROTOTYPE_EMPTY_EMAIL)}
+            className="focus-ring rounded font-bold text-cream underline underline-offset-4"
+          >
+            Prototype: see empty state
+          </button>
         </p>
       </form>
     </main>
