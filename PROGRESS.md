@@ -96,6 +96,15 @@
 - **Lazy mock:** `import("./mock")` on first use, written as a conditional expression so the build drops it when the real API is selected. Verified: with the variable set, no mock code or seed data is in `.next` (client or server).
 - Tests: smoke tests for the two-hop feed, edit-mode on duplicate, both averages and formatted times; API client tests for `/auth/logout` and the `/api` base. 33 e2e + 90 axe checks pass.
 
+## Session 9: Dependabot cleanup
+
+- `.github/dependabot.yml`: npm major bumps are ignored (`version-update:semver-major`). We stay on Next 14 / Tailwind 3 / TypeScript 5 / React 18 until after the backend MVP. The GitHub Actions ecosystem still receives majors.
+- Closed the npm major PRs (Tailwind 4, TypeScript 7, eslint-config-next 16, React DOM 19) as "Deferred". Actions bumps and npm minor/patch bumps were rebased and merged one at a time only when CI passed.
+
+## Known issues
+
+- **Google Fonts build flake:** `next build` fetches Google Fonts at build time and has failed once locally on a transient network error (a retry passed; CI has not hit it). Option later: self-host the fonts with `next/font/local`.
+
 ## Git state
 
 Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
