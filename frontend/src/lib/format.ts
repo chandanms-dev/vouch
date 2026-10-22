@@ -11,6 +11,22 @@ export function timeAgo(iso: string, now = Date.now()): string {
   return `${Math.floor(days / 30)}mo ago`;
 }
 
+const DAY = 86_400_000;
+const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? "" : "s"}`;
+
+/** "sent today", "sent 3 days ago" */
+export function sentLabel(iso: string, now = Date.now()): string {
+  const days = Math.floor((now - Date.parse(iso)) / DAY);
+  return days < 1 ? "sent today" : `sent ${plural(days, "day")} ago`;
+}
+
+/** "Joined today", "Joined 5 days ago", "Joined 3 weeks ago" */
+export function joinedLabel(iso: string, now = Date.now()): string {
+  const days = Math.floor((now - Date.parse(iso)) / DAY);
+  if (days < 1) return "Joined today";
+  return days < 14 ? `Joined ${plural(days, "day")} ago` : `Joined ${plural(Math.floor(days / 7), "week")} ago`;
+}
+
 export function initial(name: string): string {
   return name.trim().charAt(0).toUpperCase();
 }

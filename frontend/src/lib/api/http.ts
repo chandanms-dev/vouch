@@ -168,8 +168,8 @@ export function createHttpApi(baseUrl: string, onSessionLost: () => void = redir
       },
       async signOut() {
         try {
-          // Revokes the refresh token and clears the cookie; the cookie is only sent to this path.
-          await request<void>("DELETE", "/auth/refresh", { auth: false });
+          // Revokes the refresh token and clears the cookie (the cookie path /auth covers this endpoint).
+          await request<void>("POST", "/auth/logout", { auth: false });
         } finally {
           accessToken = null;
         }

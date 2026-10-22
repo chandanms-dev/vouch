@@ -9,7 +9,7 @@ import { useAsync, type AsyncState } from "@/hooks/use-async";
 import { Avatar, BackButton, Skeleton } from "@/components/ui/primitives";
 import { LinkIcon, SearchIcon } from "@/components/ui/icons";
 import { ErrorState } from "@/components/app/states";
-import { cn } from "@/lib/format";
+import { cn, joinedLabel, sentLabel } from "@/lib/format";
 
 type Tab = "friends" | "requests" | "invite";
 
@@ -216,7 +216,7 @@ function RequestsTab({
                 <span>
                   <span className="block font-bold">{r.user.name}</span>
                   <span className="block text-sm text-muted">
-                    @{r.user.handle} · {r.sentLabel}
+                    @{r.user.handle} · {sentLabel(r.sentAt)}
                   </span>
                 </span>
               </div>
@@ -292,7 +292,7 @@ function InviteTab() {
                 <Avatar name={i.name} size="md" />
                 <span>
                   <span className="block font-bold">{i.name}</span>
-                  <span className="block text-sm text-muted">{i.label}</span>
+                  <span className="block text-sm text-muted">{i.status === "joined" && i.joinedAt ? joinedLabel(i.joinedAt) : "Not joined yet"}</span>
                 </span>
               </div>
               <span
