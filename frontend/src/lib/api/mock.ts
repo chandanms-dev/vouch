@@ -44,7 +44,53 @@ const joinedAnticipations = new Set<string>();
 let viewerId: string | null = null;
 let idCounter = 100;
 
-const wait = (ms = 220) => new Promise<void>((r) => setTimeout(r, ms));
+// ---------- persistence ----------
+
+/**
+ * Demo state lives in localStorage so vouches, edits, deletes, friendships and
+ * sign-in survive a refresh. Every storage call is guarded: if storage is
+ * unavailable the mock keeps working in memory only.
+ */
+const STATE_KEY = "vouch.demo.v1";
+let hydrated = false;
+
+function hydrate() {
+  if (hydrated || typeof window === "undefined") return;
+  hydrated = true;
+  try {
+    const raw = window.localStorage.getItem(STATE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw) as Record<string, unknown>;
+    if (!Array.isArray(s.vouches) || !Array.isArray(s.users)) return;
+    users.splice(0, users.length, ...(s.users as User[]));
+    vouches.splice(0, vouches.length, ...(s.vouches as Vouch[]));
+    friendships.splice(0, friendships.length, ...(s.friendships as [string, string][]));
+    requests.splice(0, requests.length, ...(s.requests as typeof requests));
+    anticipations.splice(0, anticipations.length, ...(s.anticipations as typeof anticipations));
+    joinedAnticipations.clear();
+    (s.joined as string[]).forEach((j) => joinedAnticipations.add(j));
+    idCounter = Math.max(idCounter, Number(s.idCounter) || 0);
+  } catch {
+    /* corrupt or unavailable: keep the seed data */
+  }
+}
+
+function persist() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      STATE_KEY,
+      JSON.stringify({ users, vouches, friendships, requests, anticipations, joined: [...joinedAnticipations], idCounter }),
+    );
+  } catch {
+    /* storage full or blocked: stay in memory */
+  }
+}
+
+const wait = (ms = 220) => {
+  hydrate();
+  return new Promise<void>((r) => setTimeout(r, ms));
+};
 const nextId = (p: string) => `${p}${++idCounter}`;
 
 // ---------- dev flags ----------
@@ -53,6 +99,7 @@ const nextId = (p: string) => `${p}${++idCounter}`;
  * Prototype switches, read from the URL once per page load and kept for the tab:
  *  ?fail=1      every data call (feed, detail, profile, search, my vouches) fails; ?fail=0 clears it
  *  ?fail=once   only the next such call fails, so Retry works
+ *  ?fail=more   only "load more" on the feed fails (cursor pages)
  *  ?empty=tv | anime | vouches   feed filter / profile vouch lists come back empty; ?empty=0 clears it
  */
 const DEV_PREFIX = "vouch.dev.";
@@ -79,7 +126,7 @@ function devFlag(name: string): string | null {
 
 function failIfRequested() {
   const f = devFlag("fail");
-  if (!f) return;
+  if (!f || f === "more") return;
   if (f === "once") window.sessionStorage.removeItem(DEV_PREFIX + "fail");
   throw new ApiError("network", "Simulated network failure");
 }
@@ -117,6 +164,7 @@ function userForEmail(email: string): User {
     tags: [],
   };
   users.push(user);
+  persist();
   return user;
 }
 
@@ -253,6 +301,23 @@ export const mockApi: VouchApi = {
     },
   },
 
+  demo: {
+    async reset() {
+      await wait(150);
+      try {
+        window.localStorage.removeItem(STATE_KEY);
+      } catch {
+        /* nothing stored */
+      }
+      users.splice(0, users.length, ...seed.users.map((u) => ({ ...u })));
+      friendships.splice(0, friendships.length, ...seed.friendships.map(([a, b]): [string, string] => [a, b]));
+      vouches.splice(0, vouches.length, ...seed.vouches.map((v) => ({ ...v })));
+      anticipations.splice(0, anticipations.length, ...seed.anticipations.map((a) => ({ ...a, waiting: a.waiting.map((w) => ({ ...w })) })));
+      requests.splice(0, requests.length, ...seed.initialRequests.map((r) => ({ ...r })));
+      joinedAnticipations.clear();
+    },
+  },
+
   waitlist: {
     async join(email) {
       await wait(450);
@@ -302,6 +367,7 @@ export const mockApi: VouchApi = {
   friends: {
     async list(query) {
       await wait(150);
+      failIfRequested();
       const me = requireViewer();
       const q = query?.trim().toLowerCase();
       return friendIds(me.id)
@@ -311,6 +377,7 @@ export const mockApi: VouchApi = {
     },
     async requests() {
       await wait(150);
+      failIfRequested();
       const me = requireViewer();
       const incoming = requests
         .filter((r) => r.toId === me.id)
@@ -336,6 +403,7 @@ export const mockApi: VouchApi = {
       const r = requests[i]!;
       requests.splice(i, 1);
       if (!areFriends(r.fromId, r.toId)) friendships.push([r.fromId, r.toId]);
+      persist();
     },
     async decline(requestId) {
       await wait(150);
@@ -343,6 +411,7 @@ export const mockApi: VouchApi = {
       const i = requests.findIndex((r) => r.id === requestId && r.toId === me.id);
       if (i < 0) throw new ApiError("not_found");
       requests.splice(i, 1);
+      persist();
     },
     async sendRequest(userId) {
       await wait(200);
@@ -354,6 +423,7 @@ export const mockApi: VouchApi = {
       if (incoming) return mockApi.friends.accept(incoming.id);
       if (requests.some((r) => r.fromId === me.id && r.toId === userId)) return;
       requests.push({ id: nextId("r"), fromId: me.id, toId: userId, createdAt: new Date().toISOString() });
+      persist();
     },
     async eligibility(userId): Promise<Eligibility> {
       await wait(80);
@@ -433,6 +503,7 @@ export const mockApi: VouchApi = {
         createdAt: new Date().toISOString(),
       };
       vouches.push(vouch);
+      persist();
       return vouch;
     },
     async update(id, input) {
@@ -444,6 +515,7 @@ export const mockApi: VouchApi = {
       v.tags = validateVouchInput(input);
       v.rating = input.rating;
       v.review = input.review.trim();
+      persist();
       return { ...v };
     },
     async remove(id) {
@@ -453,6 +525,7 @@ export const mockApi: VouchApi = {
       if (i < 0) throw new ApiError("not_found");
       if (vouches[i]!.authorId !== me.id) throw new ApiError("forbidden");
       vouches.splice(i, 1);
+      persist();
     },
     async mine() {
       await wait(150);
@@ -470,6 +543,7 @@ export const mockApi: VouchApi = {
     async page(opts) {
       await wait(350);
       failIfRequested();
+      if (opts?.cursor && devFlag("fail") === "more") throw new ApiError("network", "Simulated network failure");
       const me = requireViewer();
       if (opts?.kind && devFlag("empty") === opts.kind) return { items: [], nextCursor: null };
       const limit = opts?.limit ?? 6;
@@ -509,6 +583,7 @@ export const mockApi: VouchApi = {
       }
       joinedAnticipations.add(`${me.id}:${a.id}`);
       if (!a.waiting.some((w) => w.userId === me.id)) a.waiting.push({ userId: me.id, linkedVouchId });
+      persist();
     },
   },
 
