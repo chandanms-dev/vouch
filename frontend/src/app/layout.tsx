@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Nunito_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["700", "800"],
+// Self-hosted variable fonts (latin subset), the same files Google Fonts served.
+const bricolage = localFont({
+  src: "./fonts/BricolageGrotesque-latin.woff2",
+  weight: "200 800",
   variable: "--font-bricolage",
   display: "swap",
 });
-const nunito = Nunito_Sans({
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+const nunito = localFont({
+  src: "./fonts/NunitoSans-latin.woff2",
+  weight: "200 1000",
   variable: "--font-nunito",
   adjustFontFallback: false,
   display: "swap",

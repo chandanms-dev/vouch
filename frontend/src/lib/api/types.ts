@@ -104,10 +104,11 @@ export type Profile =
     }
   | {
       relation: "fof";
-      // Friends of friends expose only name, avatar (initial), via and shared tags.
+      // Friends of friends expose only name, avatar (initial), via and their vouches (each labelled with via).
+      // No tags, no friend list, no anticipations.
       user: Pick<User, "id" | "handle" | "name">;
       via: { id: string; handle: string; name: string };
-      sharedTags: string[];
+      vouches: VouchView[];
       eligibility: Eligibility;
       requestState: "none" | "incoming" | "outgoing";
     };

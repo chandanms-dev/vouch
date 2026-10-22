@@ -161,18 +161,30 @@ function FriendOfFriend({ p, onChange }: { p: Extract<Profile, { relation: "fof"
         </Link>
       </p>
 
-      <h2 className="mt-10 font-display text-2xl font-extrabold">Taste you share</h2>
-      {p.sharedTags.length === 0 ? (
-        <p className="mt-3 text-muted">No shared tags yet.</p>
-      ) : (
-        <ul className="mt-4 flex flex-wrap gap-3">
-          {p.sharedTags.map((t, i) => (
-            <li key={t}>
-              <TagPill tilt={TILTS[i % TILTS.length]}>{t}</TagPill>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section className="mt-10" aria-labelledby="fof-v-h">
+        <div className="flex items-baseline justify-between">
+          <h2 id="fof-v-h" className="font-display text-2xl font-extrabold">
+            Vouches
+          </h2>
+          <span className="text-sm text-muted">{p.vouches.length} total</span>
+        </div>
+        {p.vouches.length === 0 ? (
+          <EmptyState
+            tone="lavender"
+            icon={<PlusIcon width={36} height={36} />}
+            title="No vouches yet."
+            body={`${p.user.name.split(" ")[0]} has not vouched for anything yet.`}
+          />
+        ) : (
+          <ul className="mt-4 space-y-4">
+            {p.vouches.map((v) => (
+              <li key={v.vouch.id}>
+                <VouchCard view={v} href={`/show/${v.show.id}`} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {p.eligibility.nominated && (
         <div className={cn("mt-auto pt-16")}>

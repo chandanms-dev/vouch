@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "Vouch. Taste you can trust.";
@@ -11,17 +13,9 @@ const MUTED = "#B9C1DD";
 const LAVENDER = "#B9A7FF";
 const PINK = "#FF9FD0";
 
-/** Bricolage Grotesque 800 from Google Fonts; falls back to the default sans if the fetch fails. */
+/** Bricolage Grotesque 800, read from the repo (satori reads TrueType, not woff2). */
 async function loadFont() {
-  try {
-    // No User-Agent: Google then serves TrueType, which satori can read (it cannot read woff2).
-    const css = await (await fetch("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800")).text();
-    const url = css.match(/src: url\((.+?)\) format\('truetype'\)/)?.[1];
-    if (!url) return null;
-    return await (await fetch(url)).arrayBuffer();
-  } catch {
-    return null;
-  }
+  return readFile(join(process.cwd(), "src/app/fonts/BricolageGrotesque-800.ttf"));
 }
 
 function Card({ title, name, score, bg, tilt }: { title: string; name: string; score: number; bg: string; tilt: number }) {

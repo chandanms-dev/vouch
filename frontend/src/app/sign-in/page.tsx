@@ -82,7 +82,7 @@ function SignIn() {
         </button>
         <p className="mt-4 text-center text-sm text-muted">
           Vouch is invite-only. Got a code?{" "}
-          <Link href="/#code" className="font-bold text-cream underline underline-offset-4">
+          <Link href="/#code" className="hit-44 font-bold text-cream underline underline-offset-4">
             Enter invite
           </Link>
         </p>

@@ -257,13 +257,15 @@ function normaliseTag(t: string) {
   return t.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
+const MAX_TAGS = 3;
+
 function validateVouchInput(input: UpdateVouchInput): string[] {
   if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 10) {
     throw new ApiError("invalid", "Rating must be 1 to 10");
   }
   if (input.review.length > 280) throw new ApiError("invalid", "Review is too long");
   const tags = [...new Set(input.tags.map(normaliseTag).filter(Boolean))];
-  if (tags.length > 5) throw new ApiError("invalid", "Max 5 tags");
+  if (tags.length > MAX_TAGS) throw new ApiError("invalid", `Max ${MAX_TAGS} tags`);
   return tags;
 }
 
@@ -628,7 +630,13 @@ export const mockApi: VouchApi = {
         relation: "fof",
         user: { id: user.id, handle: user.handle, name: user.name },
         via: { id: via.id, handle: via.handle, name: firstName(via.name) },
-        sharedTags: shared,
+        vouches: vouches
+          .filter((v) => v.authorId === user.id && devFlag("empty") !== "vouches")
+          .sort(byNewest)
+          .flatMap((v) => {
+            const view = toView(me.id, v);
+            return view ? [view] : [];
+          }),
         eligibility,
         requestState,
       } satisfies Profile;

@@ -101,10 +101,6 @@
 - `.github/dependabot.yml`: npm major bumps are ignored (`version-update:semver-major`). We stay on Next 14 / Tailwind 3 / TypeScript 5 / React 18 until after the backend MVP. The GitHub Actions ecosystem still receives majors.
 - Closed the npm major PRs (Tailwind 4, TypeScript 7, eslint-config-next 16, React DOM 19) as "Deferred". Merged one at a time after a rebase and a green CI: #7 checkout 7, #8 setup-node 7, #9 upload-artifact 7 (only runs on failure, so CI does not exercise it), #10 @axe-core/playwright 4.14. The Node 20 action warning is gone.
 
-## Known issues
-
-- **Google Fonts build flake:** `next build` fetches Google Fonts at build time and has failed once locally on a transient network error (a retry passed; CI has not hit it). Option later: self-host the fonts with `next/font/local`.
-
 ## Session 10: Security triage (`chore/security-triage`)
 
 - 30 Dependabot alerts at the start: 24 `next` (1 critical x2, high, medium, low), 4 `postcss` (runtime, via Next's bundled copy), 1 `glob`, 1 `braces`, 1 `postcss-selector-parser` (all dev-only).
@@ -113,9 +109,28 @@
 - Next.js alerts are not reachable for the features we do not use: no middleware, no `next/image`, no server actions, no route handlers, no Pages Router, no `beforeInteractive` scripts. Possibly relevant: the `/api` rewrite (request smuggling and SSRF-in-rewrites advisories) once the real backend is behind it, and Server Components handling (App Router, static pages today). Recommendation: defer the Next 15 upgrade to just before the real backend is wired up, then do it.
 - `braces` (no fix exists) and `postcss-selector-parser` (needs Tailwind 4) are build-time only. Not dismissed yet; listed for approval.
 
+## Session 11: Batch 5, frontend wrap-up (`batch5-wrapup`) - frontend complete
+
+- **FoF profile** (`/u/{username}`): name, avatar, "via <friend>", their vouches (dashed cards, "author · via friend") and Add friend (only when `nominated`). No taste tags, friend list or count, or anticipations. Friend = full profile, stranger = 404. `Profile` (fof) now has `vouches` and no `sharedTags`; mock, `docs/api-contract.md` (per-relation field table) and `CLAUDE.md` updated.
+- **Composer limits:** review max 280 with the live counter (already there); tags max **3** (was 5): "+ tag" is disabled at 3 with helper text ("That's the limit: 3 tags. Remove one to add another."). Mock returns 400 `invalid` ("Review is too long", "Max 3 tags"); contract documents both limits.
+- **Fonts:** Bricolage Grotesque and Nunito Sans are self-hosted with `next/font/local` (`src/app/fonts/`, the same latin variable woff2 Google served, so rendering is unchanged). The OG image also read Google Fonts at build; it now reads a local TTF, so the build has no network font fetch. Known-issue note removed.
+- **Hit areas:** "Sign in" (landing, invite page) and "Enter invite" (sign-in) use `.hit-44`: invisible 44px target, no layout change.
+- **README.md** rewritten (pitch, live link, 2 screenshots in `docs/screenshots/`, stack, run, mock toggles, contract link, "Backend in progress").
+- Tests: new smoke tests for the FoF profile, friend vs stranger, composer limits and the hit area. 41 e2e + 90 axe pass locally.
+
+## Status: frontend complete
+
+Remaining frontend work is gated on the backend:
+- Next 15 upgrade (clears the Next.js advisories; do it just before wiring the real backend).
+- Testing against a real server (cookies, `/api` proxy, refresh flow, CORS-free setup).
+- Pagination for lists (friends, `vouches/mine`, profile vouches) once they get long.
+- Real magic-link flow (email delivery, single-use tokens; removes the mock "Open email app" button).
+
+Tier 2 (after the MVP): Film, Book and Food, Spaces, Plans, Edit profile.
+
 ## Git state
 
-Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
+Work lands on `main` through PRs.
 
 ## Next session
 Backend Story 1 (setup). Hand-written by the user; Claude explains and reviews only.

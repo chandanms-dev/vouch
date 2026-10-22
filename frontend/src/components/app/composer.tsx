@@ -10,7 +10,7 @@ import { EmptyState, ErrorState } from "@/components/app/states";
 import { KIND, type VisualKind } from "@/components/ui/kind";
 
 const MAX_REVIEW = 280;
-const MAX_TAGS = 5;
+const MAX_TAGS = 3;
 const MIN_QUERY = 3;
 
 /** Type chips. Only Shows is active in the MVP. */
@@ -361,8 +361,19 @@ function RateStep({
             </button>
           </li>
         ))}
-        {tags.length < MAX_TAGS &&
-          (addingTag ? (
+        {tags.length >= MAX_TAGS ? (
+          <li>
+            <button
+              type="button"
+              disabled
+              aria-describedby="tag-help"
+              className="inline-flex h-7 cursor-not-allowed items-center rounded-full border-2 border-dashed border-muted px-3 text-tag font-semibold text-muted"
+            >
+              + tag
+            </button>
+          </li>
+        ) : (
+          addingTag ? (
             <li>
               <input
                 autoFocus
@@ -390,8 +401,14 @@ function RateStep({
                 + tag
               </button>
             </li>
-          ))}
+          )
+        )}
       </ul>
+      <p id="tag-help" className="mt-2 text-meta text-muted">
+        {tags.length >= MAX_TAGS
+          ? `That's the limit: ${MAX_TAGS} tags. Remove one to add another.`
+          : `Up to ${MAX_TAGS} tags.`}
+      </p>
 
       {error && (
         <p role="alert" className="mt-3 text-sm font-semibold text-pink">
