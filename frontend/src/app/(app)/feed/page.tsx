@@ -85,7 +85,8 @@ export default function FeedPage() {
     >
       {FILTERS.map((f) => {
         const active = filter === f.id;
-        const tone = f.id === "all" ? "bg-cream" : KIND[f.id].field;
+        const fill = f.id === "all" ? "bg-cream" : KIND[f.id].field;
+        const outline = f.id === "all" ? "border-cream" : KIND[f.id].border;
         return (
           <button
             key={f.id}
@@ -93,9 +94,8 @@ export default function FeedPage() {
             aria-pressed={active}
             onClick={() => setFilter(f.id)}
             className={cn(
-              "press focus-ring inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-4 text-tag font-extrabold text-ink transition-opacity",
-              tone,
-              active && "ring-2 ring-cream ring-offset-2 ring-offset-ink",
+              "press focus-ring inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border-2 px-4 text-tag font-extrabold",
+              active ? cn(fill, "border-transparent text-ink") : cn(outline, "bg-transparent text-cream"),
             )}
           >
             {f.id !== "all" && KIND[f.id].icon}
@@ -141,7 +141,7 @@ export default function FeedPage() {
             {items.map((item, i) => (
               <li
                 key={`${item.type}-${item.id}`}
-                className="animate-fade-up md:mb-6 md:break-inside-avoid"
+                className="animate-fade-up md:break-inside-avoid md:pb-6"
                 style={{ animationDelay: `${Math.min(i % 6, 5) * 40}ms` }}
               >
                 {item.type === "vouch" ? (
