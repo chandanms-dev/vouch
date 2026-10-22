@@ -6,7 +6,7 @@ import { useApp } from "@/components/providers";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const BTN =
-  "press focus-ring inline-flex h-9 items-center rounded-full border-2 border-ink px-4 text-sm font-extrabold text-ink disabled:opacity-50";
+  "press focus-ring inline-flex h-11 items-center rounded-full border-2 border-ink px-4 text-label font-extrabold text-ink disabled:opacity-50";
 
 /** Edit and Delete for the viewer's own vouch. Render only when the viewer is the author. */
 export function OwnVouchActions({ view }: { view: VouchView }) {

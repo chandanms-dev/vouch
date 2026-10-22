@@ -174,6 +174,8 @@ export interface VouchApi {
     signOut(): Promise<void>;
   };
   waitlist: { join(email: string): Promise<void> };
+  /** Prototype only: puts the mock data back to its seed state. */
+  demo: { reset(): Promise<void> };
   invites: {
     preview(code: string): Promise<InvitePreview>;
     mine(): Promise<MyInvite>;

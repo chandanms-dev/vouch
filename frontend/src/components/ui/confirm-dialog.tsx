@@ -25,7 +25,7 @@ export function ConfirmDialog({
   return (
     <Sheet open={open} onClose={busy ? () => undefined : onClose} label={title}>
       <div className="px-6 pb-6 pt-4 md:pt-8">
-        <h2 className="font-display text-2xl font-extrabold leading-7">{title}</h2>
+        <h2 className="font-display text-h2 font-extrabold">{title}</h2>
         <p className="mt-3 text-muted">{body}</p>
         <button type="button" onClick={onConfirm} disabled={busy} className="btn-primary mt-6 w-full">
           {busy ? "Deleting…" : confirmLabel}

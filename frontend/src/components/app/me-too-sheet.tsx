@@ -63,8 +63,8 @@ export function MeTooSheet({
       <div className="px-6 pb-6 pt-4 md:pt-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="font-display text-[28px] font-extrabold leading-8">Why are you in?</h2>
-            <p className="mt-2 text-sm text-muted">Link one of your vouches so friends know your taste.</p>
+            <h2 className="font-display text-h2 font-extrabold">Why are you in?</h2>
+            <p className="mt-2 text-label text-muted">Link one of your vouches so friends know your taste.</p>
           </div>
           <SheetClose onClick={onClose} />
         </div>
@@ -78,19 +78,19 @@ export function MeTooSheet({
         ) : mine.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-raised p-5 text-center">
             <p className="font-semibold">A vouch of your own comes first.</p>
-            <p className="mt-1 text-sm text-muted">Me too needs a vouch so friends can see your taste.</p>
+            <p className="mt-1 text-label text-muted">Me too needs a vouch so friends can see your taste.</p>
             <button type="button" onClick={onVouchFirst} className="btn-primary mt-4 w-full">
               Vouch something first
             </button>
           </div>
         ) : (
           <>
-            <ul role="radiogroup" aria-label="Your vouches" className="mt-4 space-y-2">
+            <div role="radiogroup" aria-label="Your vouches" className="mt-4 space-y-2">
               {mine.map((m) => {
                 const selected = m.vouch.id === picked;
                 return (
-                  <li key={m.vouch.id}>
-                    <button
+                  <button
+                      key={m.vouch.id}
                       type="button"
                       role="radio"
                       aria-checked={selected}
@@ -110,22 +110,21 @@ export function MeTooSheet({
                         {selected && <span className="h-3 w-3 rounded-full bg-ink" />}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <TypeBadge kind={m.show.kind} onField={selected} className="h-6 text-xs" />
-                        <span className="mt-1 block truncate font-display text-lg font-extrabold">{m.show.title}</span>
+                        <TypeBadge kind={m.show.kind} onField={selected} className="h-6 text-meta" />
+                        <span className="mt-1 block truncate font-display text-lead font-extrabold">{m.show.title}</span>
                       </span>
                       <ScoreBadge value={m.vouch.rating} size="sm" tilted={false} />
                     </button>
-                  </li>
                 );
               })}
-            </ul>
+            </div>
             {picks && (
-              <p className="mt-4 text-sm text-muted" aria-live="polite">
+              <p className="mt-4 text-label text-muted" aria-live="polite">
                 {joinNames(shown)} will see: “Me too, because I loved {picks.show.title}.”
               </p>
             )}
             {error && (
-              <p role="alert" className="mt-3 text-sm font-semibold text-pink">
+              <p role="alert" className="mt-3 text-label font-semibold text-pink">
                 {error}
               </p>
             )}
@@ -134,7 +133,7 @@ export function MeTooSheet({
             </button>
           </>
         )}
-        <button type="button" onClick={onClose} className="press focus-ring mt-2 h-12 w-full rounded-full text-base font-extrabold">
+        <button type="button" onClick={onClose} className="press focus-ring mt-2 h-12 w-full rounded-full text-body font-extrabold">
           Cancel
         </button>
       </div>
