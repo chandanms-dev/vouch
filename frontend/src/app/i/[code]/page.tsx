@@ -79,7 +79,7 @@ export default function InvitePage() {
         </Link>
         <p className="mt-4 text-center text-sm text-muted">
           Already on Vouch?{" "}
-          <Link href="/sign-in" className="font-bold text-cream underline underline-offset-4">
+          <Link href="/sign-in" className="hit-44 font-bold text-cream underline underline-offset-4">
             Sign in
           </Link>
         </p>

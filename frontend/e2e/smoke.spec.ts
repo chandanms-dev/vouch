@@ -162,3 +162,62 @@ test("friends page shows request and invite times as text", async ({ page }) => 
   await expect(page.getByText(/Joined \d+ weeks? ago/).first()).toBeVisible();
   await expect(page.getByText("Not joined yet")).toBeVisible();
 });
+
+test("a friend-of-friend profile shows name, via, their vouches and Add friend, and nothing else", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/u/arjun");
+  await expect(page.getByRole("heading", { level: 1, name: "Arjun Mehta" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Dev/ }).first()).toBeVisible(); // the via link
+  await expect(page.getByRole("heading", { name: "Vouches" })).toBeVisible();
+  const cards = page.locator("main article");
+  expect(await cards.count()).toBeGreaterThan(0);
+  await expect(cards.first()).toContainText("via");
+  await expect(page.getByRole("button", { name: "Add friend" })).toBeVisible();
+  await expect(page.getByText("Taste you share")).toHaveCount(0);
+  await expect(page.getByText(/friends$/)).toHaveCount(0); // no friend count
+  await expect(page.getByText("Me too")).toHaveCount(0); // no anticipations
+});
+
+test("a friend has a full profile and a stranger is a 404", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/u/maya");
+  await expect(page.getByText("Taste you share")).toBeVisible();
+  await expect(page.getByText(/\d+ friends/)).toBeVisible();
+  await page.goto("/u/nobody");
+  await expect(page.getByRole("heading", { level: 1, name: "Profile not found." })).toBeVisible();
+});
+
+test("the composer caps the review at 280 characters with a live counter and tags at 3", async ({ page }) => {
+  await signedIn(page);
+  await page.goto("/feed");
+  await page.getByRole("link", { name: /^Adolescence, rated/ }).first().click();
+  await page.getByRole("button", { name: "Add your vouch" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("button", { name: "7", exact: true }).click();
+  await dialog.getByLabel("Your review").fill("x".repeat(300));
+  await expect(dialog.getByText("280 / 280")).toBeVisible();
+  await dialog.getByLabel("Your review").fill("short");
+  await expect(dialog.getByText("5 / 280")).toBeVisible();
+
+  for (const t of ["one", "two", "three"]) {
+    await dialog.getByRole("button", { name: "+ tag" }).click();
+    await dialog.getByLabel("New tag").fill(t);
+    await dialog.getByLabel("New tag").press("Enter");
+  }
+  await expect(dialog.getByRole("button", { name: "+ tag" })).toBeDisabled();
+  await expect(dialog.getByText("Remove one to add another.")).toBeVisible();
+  await dialog.getByRole("button", { name: "Remove tag two" }).click();
+  await expect(dialog.getByRole("button", { name: "+ tag" })).toBeEnabled();
+  await expect(dialog.getByText("Up to 3 tags.")).toBeVisible();
+});
+
+test("inline Sign in and Enter invite links have a 44px hit area", async ({ page }) => {
+  await page.goto("/sign-in");
+  const link = page.getByRole("link", { name: "Enter invite" });
+  const hit = await link.evaluate((el) => {
+    const r = getComputedStyle(el, "::before");
+    return { h: parseFloat(r.height), w: parseFloat(r.width) };
+  });
+  expect(hit.h).toBeGreaterThanOrEqual(44);
+  expect(hit.w).toBeGreaterThanOrEqual(44);
+});

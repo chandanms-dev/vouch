@@ -24,6 +24,8 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 - **Bricolage Grotesque** (700/800): wordmark, titles, scores.
 - **Nunito Sans** (400/600/700/800): body, buttons, meta.
 
+Self-hosted in `frontend/src/app/fonts/` (variable woff2, latin subset, loaded with `next/font/local`; the OG image uses the static `BricolageGrotesque-800.ttf` because satori cannot read woff2). Both families are SIL Open Font License.
+
 ## Type scale (applied)
 
 The app uses the earlier estimates below, kept because the measured values (next section) looked worse in the real UI. Named styles in `frontend/tailwind.config.ts`: `text-hero` 72/72, `text-hero-sm` 44/44, `text-h1` 32/36, `text-h2` 24/28, `text-card` 22/28, `text-meta` 12/16, `text-tag` 13/16. Other sizes use Tailwind's defaults (`text-sm` 14/20, `text-base` 16/24, `text-lg` 18/28, `text-xl` 20/28, `text-2xl` 24/32) or an explicit `text-[Npx]` with `leading-*` and `tracking-*`, exactly as before PR #4.

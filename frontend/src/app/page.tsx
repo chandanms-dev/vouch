@@ -285,7 +285,7 @@ function Code() {
           </form>
           <p className="mt-6 text-sm">
             Already in?{" "}
-            <Link href="/sign-in" className="font-extrabold underline underline-offset-4">
+            <Link href="/sign-in" className="hit-44 font-extrabold underline underline-offset-4">
               Sign in
             </Link>
           </p>

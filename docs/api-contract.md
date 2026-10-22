@@ -77,8 +77,11 @@ interface AnticipationView {
 ```
 
 Rules for the vouch fields (validated on create and update, 400 `invalid`): `rating` integer 1 to 10, `review`
-at most 280 characters (trimmed), at most 5 `tags`, each normalised server side to lowercase, spaces and
-underscores to `-`, characters outside `a-z0-9-` dropped, duplicates removed.
+at most 280 characters (trimmed), at most **3** `tags`, each normalised server side to lowercase, spaces and
+underscores to `-`, characters outside `a-z0-9-` dropped, duplicates removed (the limit applies after normalisation).
+The composer enforces the same limits in the UI (280-character counter, the "+ tag" control disabled at 3 with a
+helper line); the server must still reject anything over, with `400 invalid` and a short `message` such as
+`"Review is too long"` or `"Max 3 tags"`. The mock does the same.
 
 ### Visibility rules (server enforced)
 
@@ -86,7 +89,7 @@ underscores to `-`, characters outside `a-z0-9-` dropped, duplicates removed.
 | --- | --- |
 | Self | everything of their own |
 | Direct friend | full profile, all their vouches, author shown by name |
-| Friend of friend (FoF) | **profile:** only `name`, avatar initial (derived from name), `via`, shared taste tags. **Vouches:** their vouches appear in the feed and on show pages, always labelled with `via` |
+| Friend of friend (FoF) | **profile:** only `name`, avatar initial (derived from name), `via`, their vouches (each labelled with `via`) and the Add friend state. No taste tags, no friend list or count, no anticipations. **Vouches:** also in the feed and on show pages, always labelled with `via` |
 | Anyone else (stranger) | does not exist: `404 not_found`, never `403` |
 
 - The **feed is two-hop**: vouches by direct friends (`relation: "friend"`, solid card) and by friends of
@@ -423,16 +426,22 @@ type Profile =
     }
   | {
       relation: "fof";
-      user: { id: string; handle: string; name: string };    // nothing else, no tags, no vouches
+      user: { id: string; handle: string; name: string };    // nothing else: no tags, no friend count
       via: { id: string; handle: string; name: string };
-      sharedTags: string[];
+      vouches: VouchView[];                                 // newest first; every author.via is set
       eligibility: Eligibility;                             // as endpoint 14
       requestState: "none" | "incoming" | "outgoing";       // pending friend request between the two
     };
 ```
 
-A stranger (or unknown handle) is `404 not_found`, indistinguishable from a handle that does not exist. For
-`fof`, `eligibility` is the same value endpoint 14 would return.
+| Relation | Fields in the response |
+| --- | --- |
+| `self`, `friend` | `user` (with `tags`), `friendCount`, `sharedTags`, `vouches` |
+| `fof` | `user` (`id`, `handle`, `name` only), `via`, `vouches`, `eligibility`, `requestState`. **No** `tags`, `friendCount`, `sharedTags`, friend list or anticipations |
+| stranger / unknown | `404 not_found`, indistinguishable from a handle that does not exist |
+
+For `fof`, `eligibility` is the same value endpoint 14 would return, and the UI shows "Add friend" only when
+`nominated` is true.
 
 ## 9. Mock vs real
 
