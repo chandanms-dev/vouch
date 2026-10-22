@@ -105,6 +105,14 @@
 
 - **Google Fonts build flake:** `next build` fetches Google Fonts at build time and has failed once locally on a transient network error (a retry passed; CI has not hit it). Option later: self-host the fonts with `next/font/local`.
 
+## Session 10: Security triage (`chore/security-triage`)
+
+- 30 Dependabot alerts at the start: 24 `next` (1 critical x2, high, medium, low), 4 `postcss` (runtime, via Next's bundled copy), 1 `glob`, 1 `braces`, 1 `postcss-selector-parser` (all dev-only).
+- `next` is already at 14.2.35, the last 14.x release. Every Next.js advisory is patched only in 15.x (15.5.24 or later closes them all), so they cannot be fixed on Next 14. `npm audit fix` (no `--force`) changes nothing.
+- `package.json` `overrides` (non-breaking): `next > postcss` 8.5.31 (Next pins 8.4.31; fixes the 4 postcss alerts) and `@next/eslint-plugin-next > glob` 10.5.0 (dev-only). Lint, typecheck and build pass.
+- Next.js alerts are not reachable for the features we do not use: no middleware, no `next/image`, no server actions, no route handlers, no Pages Router, no `beforeInteractive` scripts. Possibly relevant: the `/api` rewrite (request smuggling and SSRF-in-rewrites advisories) once the real backend is behind it, and Server Components handling (App Router, static pages today). Recommendation: defer the Next 15 upgrade to just before the real backend is wired up, then do it.
+- `braces` (no fix exists) and `postcss-selector-parser` (needs Tailwind 4) are build-time only. Not dismissed yet; listed for approval.
+
 ## Git state
 
 Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
