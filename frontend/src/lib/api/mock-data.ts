@@ -6,6 +6,8 @@ const ago = (days: number, hours = 0) =>
 
 export const ME_ID = "u_me";
 export const ME_EMAIL = "chandan@email.com";
+/** Prototype only: signing in with this address lands on the empty ("quiet") feed. */
+export const EMPTY_EMAIL = "empty@vouch.test";
 
 export const users: User[] = [
   { id: ME_ID, handle: "chandan", name: "Chandan", tags: ["slow-burn", "cosy-weird", "hidden-gem", "rewatch", "fantasy", "cry-trip"] },
