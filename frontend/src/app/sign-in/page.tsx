@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api, PROTOTYPE_EMPTY_EMAIL } from "@/lib/api";
+import { api, isMockApi, PROTOTYPE_EMPTY_EMAIL } from "@/lib/api";
 import { useApp } from "@/components/providers";
 import { MiniCard } from "@/components/ui/cards";
 import { Logo } from "@/components/ui/primitives";
@@ -86,17 +86,19 @@ function SignIn() {
             Enter invite
           </Link>
         </p>
-        <p className="mt-3 text-center text-xs text-muted">
-          Prototype: any email opens the full demo feed.
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => void send(PROTOTYPE_EMPTY_EMAIL)}
-            className="focus-ring mx-auto flex min-h-11 items-center rounded font-bold text-cream underline underline-offset-4"
-          >
-            Prototype: see empty state
-          </button>
-        </p>
+        {isMockApi && (
+          <p className="mt-3 text-center text-xs text-muted">
+            Prototype: any email opens the full demo feed.
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void send(PROTOTYPE_EMPTY_EMAIL)}
+              className="focus-ring mx-auto flex min-h-11 items-center rounded font-bold text-cream underline underline-offset-4"
+            >
+              Prototype: see empty state
+            </button>
+          </p>
+        )}
       </form>
     </main>
   );

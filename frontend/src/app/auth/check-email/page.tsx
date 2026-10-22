@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, devMagicLinkToken } from "@/lib/api";
+import { api, devMagicLinkToken, isMockApi } from "@/lib/api";
 import { useApp } from "@/components/providers";
 import { MailIcon } from "@/components/ui/icons";
 import { IllustrationTile } from "@/components/ui/primitives";
@@ -37,14 +37,16 @@ export default function CheckEmailPage() {
         We sent a magic link to {email}. Tap it on this phone and you are in. It expires in 15 minutes.
       </p>
       <div className="mt-auto pt-10">
-        {/* Prototype: stands in for opening the link from the email. A real build opens the mail app. */}
-        <button
-          type="button"
-          onClick={() => router.push(`/auth/verify?token=${devMagicLinkToken(email)}`)}
-          className="btn-primary w-full"
-        >
-          Open email app
-        </button>
+        {/* Mock only: stands in for opening the link from the email. With the real API the link arrives by email. */}
+        {isMockApi && (
+          <button
+            type="button"
+            onClick={() => router.push(`/auth/verify?token=${devMagicLinkToken(email)}`)}
+            className="btn-primary w-full"
+          >
+            Open email app
+          </button>
+        )}
         <button type="button" onClick={() => router.push("/sign-in")} className="btn-outline mt-3 w-full">
           Use a different email
         </button>

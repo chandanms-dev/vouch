@@ -149,12 +149,26 @@ export type ApiErrorCode =
   | "token_invalid"
   | "invalid"
   | "forbidden"
+  | "conflict"
+  | "rate_limited"
+  | "server_error"
   | "network";
+
+/** Wire shape of every error response: see docs/api-contract.md. */
+export interface ApiErrorBody {
+  code: ApiErrorCode;
+  message: string;
+  traceId?: string;
+}
 
 export class ApiError extends Error {
   constructor(
     public code: ApiErrorCode,
     message?: string,
+    /** Correlation id from the server, for support and logs. Absent for client-side errors. */
+    public traceId?: string,
+    /** HTTP status of the response, when there was one. */
+    public status?: number,
   ) {
     super(message ?? code);
     this.name = "ApiError";
@@ -174,8 +188,8 @@ export interface VouchApi {
     signOut(): Promise<void>;
   };
   waitlist: { join(email: string): Promise<void> };
-  /** Prototype only: puts the mock data back to its seed state. */
-  demo: { reset(): Promise<void> };
+  /** Mock only: puts the demo data back to its seed state. The real client has no `demo`. */
+  demo?: { reset(): Promise<void> };
   invites: {
     preview(code: string): Promise<InvitePreview>;
     mine(): Promise<MyInvite>;

@@ -114,16 +114,18 @@ export default function MePage() {
       >
         Sign out
       </button>
-      <button
-        type="button"
-        onClick={async () => {
-          await api.demo.reset();
-          window.location.assign("/me");
-        }}
-        className="press focus-ring mt-3 h-11 w-full rounded-full text-sm font-bold text-muted underline underline-offset-4"
-      >
-        Reset demo data
-      </button>
+      {api.demo && (
+        <button
+          type="button"
+          onClick={async () => {
+            await api.demo?.reset();
+            window.location.assign("/me");
+          }}
+          className="press focus-ring mt-3 h-11 w-full rounded-full text-sm font-bold text-muted underline underline-offset-4"
+        >
+          Reset demo data
+        </button>
+      )}
     </div>
   );
 }
