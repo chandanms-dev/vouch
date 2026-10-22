@@ -17,9 +17,25 @@ const nunito = Nunito_Sans({
   display: "swap",
 });
 
+const SITE_URL = "https://vouch-ecru.vercel.app";
+const DESCRIPTION = "Taste you can trust. TV and anime picks from your friends, and their friends.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Vouch",
-  description: "Recommendations from people you actually know.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Vouch",
+    title: "Vouch",
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vouch",
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
