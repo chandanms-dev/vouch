@@ -16,6 +16,6 @@ Vouch is an invite-only recommendations app: you see vouches (rating /10 + short
 ## Visibility rules
 - Direct-friend cards show the author. Friend-of-friend cards show "author · via friend".
 - FoF profiles show only name, avatar, via and shared tags. Strangers: not found.
-- The feed contains direct friends only.
+- The feed is two-hop: direct friends (solid card) and friends of friends (dashed card, "via <friend>"). Anticipation cards come from direct friends only.
 - Add-friend is shown only when eligibility returns `nominated: true`.
 - Anticipations require a linked vouch.
