@@ -10,6 +10,7 @@ import { KIND, type VisualKind } from "@/components/ui/kind";
 
 const MAX_REVIEW = 280;
 const MAX_TAGS = 5;
+const MIN_QUERY = 3;
 
 /** Type chips. Only Shows is active in the MVP. */
 const CHIPS: { id: string; label: string; kind: VisualKind; active: boolean }[] = [
@@ -52,11 +53,12 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
   const [results, setResults] = useState<Show[] | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const typed = query.trim().length;
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const q = query.trim();
-    if (!q) {
+    if (q.length < MIN_QUERY) {
       setResults(null);
       setLoading(false);
       return;
@@ -94,26 +96,26 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
         <SheetClose onClick={onClose} />
       </div>
 
-      <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="What kind of thing">
+      <div className="-mx-2 mt-2 flex gap-1.5 overflow-x-auto px-2 py-2 scrollbar-none" role="tablist" aria-label="What kind of thing">
         {CHIPS.map((c) => (
           <button
             key={c.id}
             type="button"
             role="tab"
             aria-selected={c.active}
-            disabled={!c.active}
+            aria-disabled={!c.active}
+            tabIndex={c.active ? 0 : -1}
+            onClick={(e) => !c.active && e.preventDefault()}
             className={cn(
-              "press flex shrink-0 flex-col items-center rounded-full px-2.5 py-1 text-[13px] font-extrabold text-ink",
-              KIND[c.kind].field,
-              c.active ? "ring-2 ring-cream ring-offset-2 ring-offset-surface" : "opacity-50",
-              !c.active && "cursor-not-allowed",
+              "flex shrink-0 flex-col items-center rounded-full px-2.5 py-1 text-[13px] font-extrabold",
+              c.active ? cn("press focus-ring text-ink", KIND[c.kind].field, "ring-2 ring-cream ring-offset-2 ring-offset-surface") : "cursor-not-allowed bg-raised text-muted",
             )}
           >
             <span className="inline-flex h-7 items-center gap-1.5">
               <span>{KIND[c.kind].icon}</span>
               {c.label}
             </span>
-            {!c.active && <span className="-mt-1 whitespace-nowrap pb-1 text-[10px] font-bold">Coming soon</span>}
+            {!c.active && <span className="-mt-1 whitespace-nowrap pb-1 text-[10px] font-bold text-muted">Coming soon</span>}
           </button>
         ))}
       </div>
@@ -165,6 +167,8 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
               Check the spelling or try the original title. Not a show? Film, Book and Food are coming soon.
             </p>
           </div>
+        ) : typed > 0 && typed < MIN_QUERY ? (
+          <p className="py-12 text-center text-muted">Keep typing…</p>
         ) : results ? (
           <ul className={cn("space-y-2", loading && "opacity-60 transition-opacity")}>
             {results.map((s, i) => (
