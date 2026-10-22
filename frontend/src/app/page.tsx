@@ -56,8 +56,8 @@ export default function LandingPage() {
 function Nav() {
   return (
     <header className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-5 md:px-20 md:py-7">
-      <Logo className="text-logo" />
-      <nav aria-label="Landing" className="flex items-center gap-6 text-label font-bold">
+      <Logo className="text-[32px] md:text-[34px]" />
+      <nav aria-label="Landing" className="flex items-center gap-6 text-sm font-bold">
         <a href="#how" className="hidden hover:text-lime md:inline">How it works</a>
         <a href="#path" className="hidden hover:text-lime md:inline">Why “via”</a>
         <a href="#code" className="hidden hover:text-lime md:inline">Invite code</a>
@@ -73,10 +73,10 @@ function Hero() {
   return (
     <section className="mx-auto grid max-w-[1440px] gap-10 px-6 pb-16 pt-10 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-8 md:px-20 md:pb-28 md:pt-14">
       <div>
-        <h1 className="font-display text-hero-sm font-extrabold md:text-hero">
+        <h1 className="font-display text-hero-sm font-extrabold md:text-[76px] md:leading-[72px] md:tracking-[-0.03em]">
           Taste you can trust.
         </h1>
-        <p className="mt-6 max-w-[420px] text-body md:text-lead">
+        <p className="mt-6 max-w-[420px] text-base leading-6 md:text-lg md:leading-7">
           Vouch is where your friends, and their friends, drop the TV shows and anime they actually loved.
           Every one comes with a name.
         </p>
@@ -90,17 +90,25 @@ function Hero() {
         </div>
       </div>
 
-      {/* Mobile: two stacked cards */}
-      <div aria-hidden className="relative h-[580px] md:hidden">
-        <VouchCardBody level={0} data={SEVERANCE} className="absolute left-0 top-2 w-[300px] -rotate-6" />
-        <VouchCardBody level={0} data={FRIEREN} className="absolute right-0 top-[310px] w-[310px] rotate-3" />
+      {/*
+        Collages are laid out in normal flow, not absolute positions, so a card can never grow into its
+        neighbour. The gaps leave room for the tilt (a rotated corner moves up to ~16px) plus 16px clear.
+      */}
+      {/* Below 1024px: two stacked cards */}
+      <div aria-hidden className="flex flex-col px-2 pb-6 pt-6 lg:hidden">
+        <VouchCardBody level={0} data={SEVERANCE} className="w-[min(300px,88%)] -rotate-6" />
+        <VouchCardBody level={0} data={FRIEREN} className="ml-auto mt-14 w-[min(310px,92%)] rotate-3" />
       </div>
-      {/* Desktop: four-card collage */}
-      <div aria-hidden className="relative hidden h-[640px] md:block">
-        <VouchCardBody compact level={0} data={SEVERANCE} className="absolute left-0 top-[40px] w-[240px] -rotate-6" />
-        <VouchCardBody compact level={0} data={FRIEREN} className="absolute right-0 top-0 w-[240px] rotate-[-7deg]" />
-        <VouchCardBody compact level={0} data={BOCCHI} className="absolute left-[14px] top-[320px] w-[250px] -rotate-6" />
-        <VouchCardBody compact level={0} data={BEAR} className="absolute right-[6px] top-[340px] w-[240px] -rotate-3" />
+      {/* 1024px and up: four-card collage, two staggered columns */}
+      <div aria-hidden className="hidden grid-cols-2 gap-x-12 px-3 py-6 lg:grid">
+        <div className="flex flex-col gap-14 pt-12">
+          <VouchCardBody compact level={0} data={SEVERANCE} className="w-full -rotate-6" />
+          <VouchCardBody compact level={0} data={BOCCHI} className="w-full -rotate-6" />
+        </div>
+        <div className="flex flex-col gap-14">
+          <VouchCardBody compact level={0} data={FRIEREN} className="w-full rotate-[-7deg]" />
+          <VouchCardBody compact level={0} data={BEAR} className="w-full -rotate-3" />
+        </div>
       </div>
     </section>
   );
@@ -109,13 +117,13 @@ function Hero() {
 function HowItWorks() {
   return (
     <section id="how" className="mx-auto max-w-[1440px] scroll-mt-4 px-6 py-12 md:px-20 md:py-24">
-      <h2 className="font-display text-heading font-extrabold md:text-hero-sm">How vouching works</h2>
+      <h2 className="font-display text-[36px] font-extrabold leading-10 tracking-tight md:text-[44px]">How vouching works</h2>
       <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-4">
         <article className="rounded-card bg-lavender p-6 text-ink md:min-h-[300px] md:p-8">
-          <h3 className="font-display text-hero-sm font-extrabold">Vouch it.</h3>
-          <p className="mt-4 text-label">Rate it out of 10 and say why, in your own words. Add a tag or two if you like.</p>
+          <h3 className="font-display text-[44px] font-extrabold leading-[44px]">Vouch it.</h3>
+          <p className="mt-4 text-sm leading-5">Rate it out of 10 and say why, in your own words. Add a tag or two if you like.</p>
           <div className="mt-6 flex items-center gap-3">
-            <span style={{ transform: "rotate(-6deg)" }} className="inline-flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-cream font-display text-stamp-lg font-extrabold">
+            <span style={{ transform: "rotate(-6deg)" }} className="inline-flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-cream font-display text-5xl font-extrabold">
               9
             </span>
             <div className="flex flex-col gap-2">
@@ -125,8 +133,8 @@ function HowItWorks() {
           </div>
         </article>
         <article className="rounded-card bg-lime p-6 text-ink md:min-h-[300px] md:p-8">
-          <h3 className="font-display text-hero-sm font-extrabold">Pass it on.</h3>
-          <p className="mt-4 text-label">
+          <h3 className="font-display text-[44px] font-extrabold leading-[44px]">Pass it on.</h3>
+          <p className="mt-4 text-sm leading-5">
             It lands in your friends’ feeds with your name on it. Their friends see it too, marked via you.
           </p>
           <div className="mt-6 flex flex-col items-start gap-2">
@@ -137,11 +145,11 @@ function HowItWorks() {
           </div>
         </article>
         <article className="rounded-card bg-pink p-6 text-ink md:min-h-[300px] md:p-8">
-          <h3 className="font-display text-hero-sm font-extrabold">Me too.</h3>
-          <p className="mt-4 text-label">
+          <h3 className="font-display text-[44px] font-extrabold leading-[44px]">Me too.</h3>
+          <p className="mt-4 text-sm leading-5">
             See something upcoming? Tap Me too, then link one of your own vouches so they know your taste.
           </p>
-          <span className="mt-5 inline-flex h-10 items-center rounded-full bg-ink px-5 text-label font-extrabold text-cream">Me too</span>
+          <span className="mt-5 inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-extrabold text-cream">Me too</span>
           <div className="mt-3 flex flex-col items-start gap-2">
             <TagPill>because I loved Severance</TagPill>
             <TagPill>because I loved Frieren</TagPill>
@@ -157,7 +165,7 @@ function Path() {
     <section id="path" className="scroll-mt-4 bg-surface">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-14 md:grid-cols-2 md:items-center md:px-20 md:py-24">
         <div>
-          <h2 className="font-display text-heading font-extrabold md:text-hero-sm">
+          <h2 className="font-display text-[36px] font-extrabold leading-10 tracking-tight md:text-[44px] md:leading-[44px]">
             Every vouch
             <br className="hidden md:block" /> shows its path.
           </h2>
@@ -169,11 +177,11 @@ function Path() {
         <div className="grid gap-6 md:grid-cols-2 md:items-start md:gap-4">
           <figure>
             <VouchCardBody level={0} data={FRIEREN} />
-            <figcaption className="mt-3 text-label text-muted">A friend: Dev. Solid, full colour, just his name.</figcaption>
+            <figcaption className="mt-3 text-sm text-muted">A friend: Dev. Solid, full colour, just his name.</figcaption>
           </figure>
           <figure>
             <VouchCardBody level={0} data={FRIEREN_FOF} />
-            <figcaption className="mt-3 text-label text-muted">
+            <figcaption className="mt-3 text-sm text-muted">
               A friend of a friend: Arjun, via Dev. Quieter, with the path shown.
             </figcaption>
           </figure>
@@ -211,23 +219,23 @@ function Code() {
   }
 
   const field =
-    "h-14 w-full rounded-full bg-cream px-6 text-body text-ink outline-none placeholder:text-ink/65 focus-visible:ring-2 focus-visible:ring-ink";
+    "h-14 w-full rounded-full bg-cream px-6 text-base text-ink outline-none placeholder:text-ink/65 focus-visible:ring-2 focus-visible:ring-ink";
   return (
     <section id="code" className="scroll-mt-4 bg-lime text-ink">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-14 md:grid-cols-[1fr_1fr] md:items-center md:px-20 md:py-24">
         <div>
-          <h2 className="font-display text-hero-sm font-extrabold md:text-hero-md">
+          <h2 className="font-display text-[44px] font-extrabold leading-[44px] tracking-tight md:text-[64px] md:leading-[60px]">
             Got a code?
             <br /> Come in.
           </h2>
-          <p className="mt-5 max-w-[440px] text-body">
+          <p className="mt-5 max-w-[440px] text-base">
             Vouch is invite-only while it grows friend by friend. No code yet? Join the waitlist and we’ll tell you when
             your spot opens.
           </p>
         </div>
         <div>
           <form onSubmit={enter}>
-            <label htmlFor="code-input" className="text-label font-bold">
+            <label htmlFor="code-input" className="text-sm font-bold">
               Invite code
             </label>
             <div className="mt-2 flex gap-2">
@@ -244,7 +252,7 @@ function Code() {
             </div>
           </form>
           <form onSubmit={join} className="mt-6">
-            <label htmlFor="waitlist-email" className="text-label font-bold">
+            <label htmlFor="waitlist-email" className="text-sm font-bold">
               Not invited yet?
             </label>
             {joined ? (
@@ -268,14 +276,14 @@ function Code() {
                   </button>
                 </div>
                 {error && (
-                  <p role="alert" className="mt-2 text-label font-bold">
+                  <p role="alert" className="mt-2 text-sm font-bold">
                     {error}
                   </p>
                 )}
               </>
             )}
           </form>
-          <p className="mt-6 text-label">
+          <p className="mt-6 text-sm">
             Already in?{" "}
             <Link href="/sign-in" className="font-extrabold underline underline-offset-4">
               Sign in
@@ -293,18 +301,18 @@ function Footer() {
       <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <p
           aria-hidden
-          className="font-display text-ghost-sm font-extrabold md:text-ghost"
+          className="font-display text-[132px] font-extrabold leading-[0.8] tracking-[-0.06em] md:text-[300px]"
         >
           vouch
         </p>
-        <nav aria-label="Footer" className="flex flex-col gap-2 text-label font-bold">
+        <nav aria-label="Footer" className="flex flex-col gap-2 text-sm font-bold">
           <a href="#how" className="focus-ring inline-flex min-h-11 items-center rounded">How it works</a>
           <a href="#path" className="focus-ring inline-flex min-h-11 items-center rounded">Why “via”</a>
           <a href="#code" className="focus-ring inline-flex min-h-11 items-center rounded">Invite code</a>
           <a href="#code" className="focus-ring inline-flex min-h-11 items-center rounded">Join the waitlist</a>
         </nav>
       </div>
-      <p className="mt-10 text-meta text-muted">Invite-only. Made for friends who trust each other’s taste.</p>
+      <p className="mt-10 text-xs text-muted">Invite-only. Made for friends who trust each other’s taste.</p>
     </footer>
   );
 }

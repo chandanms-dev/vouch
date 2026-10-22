@@ -57,7 +57,7 @@
 
 ## Session 5: Batch 3, quality pass (`batch3-quality`)
 
-- **Type scale** measured from the PNG exports (ink widths/heights matched against Chrome renders of the real fonts; not Figma), written to `docs/design/tokens.md` and `tailwind.config.ts` as named `text-*` styles (`display`, `page`, `h1`, `h2`, `card`, `h3`, `stat`, `stamp`, `body`, `body-sm`, `label`, `chip`, `meta`, `tag`, `micro`; marketing-only styles are listed separately as not measured). Every ad-hoc `text-sm/xl/[Npx]` was replaced. Corrections: card meta and timestamps 13 (was 12), type badge 14, section titles 24 on mobile and desktop (were 28/32), detail title 60 on desktop, profile name 32.
+- **Type scale** (reverted in Session 6; kept as reference only) measured from the PNG exports (ink widths/heights matched against Chrome renders of the real fonts; not Figma), written to `docs/design/tokens.md` and `tailwind.config.ts` as named `text-*` styles (`display`, `page`, `h1`, `h2`, `card`, `h3`, `stat`, `stamp`, `body`, `body-sm`, `label`, `chip`, `meta`, `tag`, `micro`; marketing-only styles are listed separately as not measured). Every ad-hoc `text-sm/xl/[Npx]` was replaced. Corrections: card meta and timestamps 13 (was 12), type badge 14, section titles 24 on mobile and desktop (were 28/32), detail title 60 on desktop, profile name 32.
 - **Persistence:** mock state (users, vouches, friendships, requests, anticipations) is stored in localStorage under `vouch.demo.v1`, all access guarded, falling back to memory. Sign-in already persisted. "Reset demo data" on Me restores the seed.
 - Toasts wait while any dialog/sheet is open (`dialog-state.ts`), then show.
 - Edit profile is a disabled "Coming soon" chip (`aria-disabled`, not focusable).
@@ -65,6 +65,14 @@
 - `npm run a11y` (`scripts/a11y-audit.mjs`, dev deps `@axe-core/playwright`, `playwright-core`; needs the app running) audits 30 routes/states at 375, 1024 and 1440: axe WCAG A/AA + best-practice, h1, heading order, tap targets and keyboard focus. Last run: 0 blocking findings, no console errors.
 - **Reduced motion:** entrances become opacity-only (so tilted stamps and tiles never move), sheets fade instead of sliding, skeleton pulse stops, press scale off. Replaces the old 1ms duration hack.
 - **Desktop check (1024/1440):** show detail was crushed at 1024 (side panel + two card columns); now one column until 1360px. "Me too" no longer wraps on narrow anticipation cards. New dev flag `?fail=more` (load-more error); `?fail=1` now also fails the Friends page.
+
+## Session 6: restore pre-Batch-3 typography (`fix/restore-typography`)
+
+- The measured type scale from PR #4 looked worse in the real UI (cramped card titles, tighter line heights), so all font sizes, line heights, letter spacing and text spacing are back to the pre-PR #4 values. `tailwind.config.ts` is back to its original named styles (`hero`, `hero-sm`, `h1`, `h2`, `card`, `meta`, `tag`); components use the original classes again. The Batch 3 names (`page`, `label`, `micro`, ...) are removed because nothing uses them.
+- `docs/design/tokens.md`: "Type scale (applied)" holds the old values; the PNG-measured table is kept as "reference only, not applied".
+- Landing hero collage is now laid out in normal flow (flex/grid with gaps sized for the tilt) instead of absolute offsets, so cards cannot grow into each other. Polygon gap between tilted cards measured at 12 widths from 320 to 1920px: minimum 36px (was overlapping at 375, and at 1024 before this fix). Stack below 1024px, 4-card collage from 1024px.
+- Verified: computed font-size / line-height / letter-spacing / weight of 1022 text runs across landing, feed, show, Me, Friends, profile and sign-in at 375 and 1440 match pre-PR #4 except 5 runs that are new elements (screen-reader h1, Reset demo data, Edit profile chip). Lint, build and the a11y audit (0 blocking findings) pass.
+- Kept from Batch 3: persistence and Reset demo data, toast queueing, inert dialogs, 44px targets, heading fixes, reduced motion, Edit profile chip, 1024px show-detail layout.
 
 ## Git state
 

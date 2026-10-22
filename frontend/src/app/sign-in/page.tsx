@@ -45,8 +45,8 @@ function SignIn() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-[430px] flex-col px-6 pb-8 pt-14">
-      <Logo className="text-wordmark" />
-      <h1 className="mt-6 max-w-[320px] font-display text-h2 font-extrabold">
+      <Logo className="text-[96px]" />
+      <h1 className="mt-6 max-w-[320px] font-display text-2xl font-extrabold leading-7">
         Recommendations from people you actually know.
       </h1>
 
@@ -70,23 +70,23 @@ function SignIn() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
-          className="h-14 w-full rounded-2xl bg-surface px-4 text-body text-cream outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-lime"
+          className="h-14 w-full rounded-2xl bg-surface px-4 text-base text-cream outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-lime"
         />
         {error && (
-          <p role="alert" className="mt-2 text-label font-semibold text-pink">
+          <p role="alert" className="mt-2 text-sm font-semibold text-pink">
             {error}
           </p>
         )}
         <button type="submit" disabled={busy || !email.trim()} className="btn-primary mt-4 h-14 w-full">
           {busy ? "Sending…" : "Send me a magic link"}
         </button>
-        <p className="mt-4 text-center text-label text-muted">
+        <p className="mt-4 text-center text-sm text-muted">
           Vouch is invite-only. Got a code?{" "}
           <Link href="/#code" className="font-bold text-cream underline underline-offset-4">
             Enter invite
           </Link>
         </p>
-        <p className="mt-3 text-center text-meta text-muted">
+        <p className="mt-3 text-center text-xs text-muted">
           Prototype: any email opens the full demo feed.
           <button
             type="button"

@@ -32,7 +32,7 @@ export default function CheckEmailPage() {
       <IllustrationTile tone="lime" tilt={-6} label="Link sent" className="mx-auto h-40 w-36 rounded-[28px] animate-pop-in">
         <MailIcon />
       </IllustrationTile>
-      <h1 className="mt-16 font-display text-title font-extrabold">Check your email.</h1>
+      <h1 className="mt-16 font-display text-[40px] font-extrabold leading-[44px] tracking-tight">Check your email.</h1>
       <p className="mt-4 text-muted">
         We sent a magic link to {email}. Tap it on this phone and you are in. It expires in 15 minutes.
       </p>
@@ -48,7 +48,7 @@ export default function CheckEmailPage() {
         <button type="button" onClick={() => router.push("/sign-in")} className="btn-outline mt-3 w-full">
           Use a different email
         </button>
-        <p className="mt-4 text-center text-label text-muted" aria-live="polite">
+        <p className="mt-4 text-center text-sm text-muted" aria-live="polite">
           {note ?? (
             <>
               Link not working?{" "}
@@ -58,7 +58,7 @@ export default function CheckEmailPage() {
             </>
           )}
         </p>
-        <p className="mt-3 text-center text-meta text-muted">
+        <p className="mt-3 text-center text-xs text-muted">
           Prototype:{" "}
           <button
             type="button"

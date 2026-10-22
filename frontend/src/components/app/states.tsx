@@ -36,10 +36,10 @@ export function ErrorState({
       <IllustrationTile tone="sky" tilt={6} className={compact ? "h-[88px] w-[88px] rounded-[24px]" : "h-28 w-28 rounded-[28px]"}>
         <AlertIcon />
       </IllustrationTile>
-      <Title className={cn("font-display font-extrabold", compact ? "mt-6 text-h3" : "mt-10 text-h1")}>
+      <Title className={cn("font-display font-extrabold", compact ? "mt-6 text-xl leading-6" : "mt-10 text-[32px] leading-9")}>
         {title}
       </Title>
-      <p className={cn("text-muted", compact ? "mt-3 text-label" : "mt-3")}>{body}</p>
+      <p className={cn("text-muted", compact ? "mt-3 text-sm" : "mt-3")}>{body}</p>
       {onRetry && (
         <button type="button" onClick={onRetry} className={cn("btn-primary w-full", compact ? "mt-5" : "mt-8")}>
           Retry
@@ -80,8 +80,8 @@ export function EmptyState({
       <IllustrationTile tone={tone} tilt={8} className="h-[88px] w-[88px] rounded-[24px]">
         {icon}
       </IllustrationTile>
-      <Title className="mt-6 max-w-[280px] font-display text-h3 font-extrabold">{title}</Title>
-      {body && <p className="mt-3 max-w-[300px] text-label text-muted">{body}</p>}
+      <Title className="mt-6 max-w-[280px] font-display text-xl leading-6 font-extrabold">{title}</Title>
+      {body && <p className="mt-3 max-w-[300px] text-sm text-muted">{body}</p>}
       {action && <div className="mt-6 w-full max-w-[260px]">{action}</div>}
     </div>
   );
@@ -99,9 +99,9 @@ export function NotFoundView({
   return (
     <div className="mx-auto flex max-w-[360px] flex-col items-center px-6 py-20 text-center animate-fade-in">
       <IllustrationTile tone="lavender" tilt={-6} label="404" className="h-36 w-32 rounded-[28px]">
-        <span className="font-display text-title font-extrabold">?</span>
+        <span className="font-display text-[40px] font-extrabold leading-none">?</span>
       </IllustrationTile>
-      <h1 className="mt-10 font-display text-h1 font-extrabold">{title}</h1>
+      <h1 className="mt-10 font-display text-[32px] font-extrabold leading-9">{title}</h1>
       <p className="mt-3 text-muted">{body}</p>
       <Link href="/" className={cn("mt-8 w-full", status === "signed-in" ? "btn-outline" : "btn-primary")}>
         Go home
@@ -119,7 +119,7 @@ export function ComingSoonPage({ title }: { title: string }) {
   return (
     <div className="mx-auto flex max-w-[360px] flex-col items-center px-6 py-24 text-center animate-fade-in">
       <IllustrationTile tone="lavender" tilt={-6} className="h-28 w-28 rounded-[28px]">
-        <span className="font-display text-h3 font-extrabold">Soon</span>
+        <span className="font-display text-xl font-extrabold">Soon</span>
       </IllustrationTile>
       <h1 className="mt-10 font-display text-h1 font-extrabold">{title}</h1>
       <p className="mt-3 text-muted">Coming soon. {title} is not part of the first release.</p>
