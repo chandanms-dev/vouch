@@ -24,21 +24,32 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 - **Bricolage Grotesque** (700/800): wordmark, titles, scores.
 - **Nunito Sans** (400/600/700/800): body, buttons, meta.
 
-## Type scale (estimates, px)
+## Type scale
 
-| Role | Font | Size / line | Weight |
-| --- | --- | --- | --- |
-| Landing hero (desktop) | Bricolage | 72 / 72 | 800 |
-| Landing hero (mobile) | Bricolage | 44 / 44 | 800 |
-| Section title | Bricolage | 40 / 40 desktop, 32 mobile | 800 |
-| Page title | Bricolage | 32 / 36 | 800 |
-| Card title | Bricolage | 22 / 28 | 800 |
-| Score | Bricolage | 28 (small 20) | 800 |
-| Body / review | Nunito Sans | 16 / 24 | 400 |
-| Meta line | Nunito Sans | 12 / 16 | 400 |
-| Tag pill | Nunito Sans | 13 / 16 | 600 |
-| Button | Nunito Sans | 16 / 24 | 800 |
-| Badge | Nunito Sans | 13 | 800 |
+> **Measured from the PNG exports, not from Figma** (Figma MCP was unavailable). Method: ink bounding boxes (width and height) of known strings in `02 Feed`, `04 Content detail`, `Me`, `Button`, `Desktop/Feed 1440` and `Desktop/Content detail 1440` (all at 1x), matched against the same strings rendered in Chrome with Bricolage Grotesque / Nunito Sans at 100px. Sizes are good to about ±1px (anti-aliasing adds roughly 1px to every edge, so ambiguous values were rounded down). Line heights were **not measurable** from glyph boxes except for the 24px review pitch; the rest keep the earlier estimates. Display tracking is inferred from width versus height and is the least certain value. Defined in `frontend/tailwind.config.ts` as named `text-*` styles; use these, never ad-hoc `text-[Npx]`.
+
+| Style (`text-*`) | Font / weight | Size / line | Tracking | Used for | Measured as |
+| --- | --- | --- | --- | --- | --- |
+| `display` | Bricolage 800 | 60 / 60 | -0.03em | Show title, desktop detail panel | 57.6 (w) to 61.5 (h) |
+| `page` | Bricolage 800 | 44 / 48 | -0.03em | Desktop page title ("Your feed"), FoF name | 39.8 (w) to 44.6 (h) |
+| `h1` | Bricolage 800 | 32 / 36 | -0.02em | Profile name, show title (mobile), error/404 titles | 30 (w) to 32.4 (h) |
+| `h2` | Bricolage 800 | 24 / 28 | -0.02em | Section titles ("Your friends", "Friends of friends"), sheet titles | 20.6 (w) to 23.4 (h) |
+| `card` | Bricolage 800 | 22 / 28 | -0.025em | Vouch and anticipation card title | 20.8 (w) to 22.1 (h) |
+| `h3` | Bricolage 800 | 20 / 24 | -0.01em | "My taste", "My vouches" | 17.5 (w) to 19 (h) |
+| `stat` | Bricolage 800 | 56 / 56 | -0.03em | Friends' average, large avatar initial | 52 (w) to 55.7 (h) |
+| `stamp` | Bricolage 800 | 28 / 28 | none | Rating stamp number (small stamp `stamp-sm` 20 / 20, estimate) | 29.3 (w), 28.6 (h) |
+| `body` | Nunito Sans 400 | 16 / 24 | none | Review text; buttons use it at 800 | 16.0 (w), 16.7 (h); line pitch 24px |
+| `body-sm` | Nunito Sans 400 | 15 / 20 | none | Subtitle, show meta line, handle | 15.0 to 15.7 |
+| `label` | Nunito Sans 700 | 14 / 20 | none | Author name, nav, Back, small buttons (800) | 14.0 to 14.6 |
+| `chip` | Nunito Sans 800 | 14 / 16 | none | Type badge, "Upcoming" | 13.5 to 14.3 |
+| `meta` | Nunito Sans 400 | 13 / 16 | none | Card meta line, timestamps, counts | 13.0 to 13.5 |
+| `tag` | Nunito Sans 600 (800 on filter chips) | 13 / 16 | none | Tag pills, filter chips | 13.0 to 13.4 |
+| `micro` | Nunito Sans 800 | 11 / 12 | none | "Coming soon", count pills | 11.1 to 12.1 |
+| `lead` | Nunito Sans 400 | 18 / 28 | none | Landing intro copy (**not measured**) | estimate |
+
+Marketing-only styles used on the landing page and **not measured** from a screen export: `hero` 76/72, `hero-md` 64/60, `hero-sm` 44/44, `title` 40/44 (auth titles), `heading` 36/40, `stamp-lg` 48, `logo` 32 (wordmark in app chrome), `wordmark` 96, `ghost` 300 and `ghost-sm` 132 (decorative word). Buttons: 52px pill, `body` at 800 (small: `label` at 800).
+
+Corrections versus the earlier estimates: card meta and timestamps were 12px, measured 13; type badge was 13, measured 14; section titles were 28/32 on mobile and 32/36 on desktop, measured 24 on both (the desktop export matches mobile); show title on desktop was 56, measured 60; profile name was 36, measured 32.
 
 ## Shape and spacing
 
@@ -56,6 +67,6 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 
 ## Still unconfirmed (not in Foundations)
 
-1. Type sizes, line heights and weights above.
+1. Line heights (only the 24px review pitch was measurable) and display tracking; sizes are measured from exports, see Type scale.
 2. Radius and shadow values (none visible; shadows assumed none).
 3. Hover/pressed/disabled colours.
