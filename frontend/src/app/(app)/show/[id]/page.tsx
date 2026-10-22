@@ -6,9 +6,11 @@ import { api, ApiError, type ShowDetail } from "@/lib/api";
 import { useApp, useAuth } from "@/components/providers";
 import { useAsync } from "@/hooks/use-async";
 import { VouchCard } from "@/components/ui/cards";
-import { Avatar, BackButton, Skeleton, TagPill, TypeBadge } from "@/components/ui/primitives";
+import { Avatar, BackButton, TagPill, TypeBadge } from "@/components/ui/primitives";
 import { KIND } from "@/components/ui/kind";
-import { ErrorState } from "@/components/app/states";
+import { ErrorState, NotFoundView } from "@/components/app/states";
+import { ShowSkeleton } from "@/components/app/skeletons";
+import { OwnVouchActions } from "@/components/app/vouch-actions";
 import { cn } from "@/lib/format";
 
 export default function ShowPage() {
@@ -21,23 +23,18 @@ export default function ShowPage() {
   const back = <BackButton onClick={() => (window.history.length > 1 ? router.back() : router.push("/feed"))} />;
 
   if (state.status === "loading") {
-    return (
-      <div className="mx-auto max-w-[1200px] px-4 pt-6 md:px-10 md:pt-10" aria-busy="true">
-        {back}
-        <Skeleton className="mt-6 h-72 !rounded-card" />
-      </div>
-    );
+    return <ShowSkeleton back={back} />;
   }
   if (state.status === "error") {
     const notFound = state.error instanceof ApiError && state.error.code === "not_found";
     return (
       <div className="mx-auto max-w-[1200px] px-4 pt-6 md:px-10 md:pt-10">
         {back}
-        <ErrorState
-          title={notFound ? "We could not find that show." : undefined}
-          body={notFound ? "It may have been removed." : undefined}
-          onRetry={notFound ? undefined : reload}
-        />
+        {notFound ? (
+          <NotFoundView title="We could not find that show." body="It may have been removed, or the link is wrong." />
+        ) : (
+          <ErrorState onRetry={reload} />
+        )}
       </div>
     );
   }
@@ -47,6 +44,7 @@ export default function ShowPage() {
 function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youId?: string }) {
   const { openComposer } = useApp();
   const { show } = d;
+  const edit = () => openComposer({ show, vouch: d.myVouch?.vouch });
   const k = KIND[show.kind];
   const total = d.friendCount + d.fofCount;
   const everyone = [...d.direct, ...d.fof];
@@ -69,6 +67,16 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
 
   const sections = (cols: string) => (
     <>
+      {d.myVouch && (
+        <section aria-labelledby="mine-h" className="mb-10 md:mb-12">
+          <h2 id="mine-h" className="font-display text-[28px] font-extrabold leading-8 md:text-[32px] md:leading-9">
+            Your vouch
+          </h2>
+          <div className="mt-4 md:max-w-[50%]">
+            <VouchCard view={d.myVouch} youId={youId} actions={<OwnVouchActions view={d.myVouch} />} />
+          </div>
+        </section>
+      )}
       <section aria-labelledby="friends-h">
         <div className="flex items-baseline justify-between">
           <div>
@@ -131,7 +139,7 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
         </section>
         <div className="px-4 pt-8">{sections("grid-cols-1")}</div>
         <div className="px-4 pt-8">
-          <button type="button" onClick={() => openComposer({ show })} className="btn-primary w-full">
+          <button type="button" onClick={edit} className="btn-primary w-full">
             {cta}
           </button>
         </div>
@@ -185,7 +193,7 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
               )}
               <button
                 type="button"
-                onClick={() => openComposer({ show })}
+                onClick={edit}
                 className="btn mt-5 w-full bg-ink text-cream hover:bg-ink/90"
               >
                 {cta}

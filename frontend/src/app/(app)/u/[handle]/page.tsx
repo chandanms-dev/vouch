@@ -7,8 +7,11 @@ import { api, ApiError, type Profile } from "@/lib/api";
 import { useApp, useAuth } from "@/components/providers";
 import { useAsync } from "@/hooks/use-async";
 import { VouchCard } from "@/components/ui/cards";
-import { Avatar, BackButton, Skeleton, TagPill } from "@/components/ui/primitives";
-import { ErrorState } from "@/components/app/states";
+import { Avatar, BackButton, TagPill } from "@/components/ui/primitives";
+import { EmptyState, ErrorState, NotFoundView } from "@/components/app/states";
+import { ProfileSkeleton } from "@/components/app/skeletons";
+import { OwnVouchActions } from "@/components/app/vouch-actions";
+import { PlusIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/format";
 
 const TILTS = [-2, 1.5, -1, 2, -1.5, 1];
@@ -17,7 +20,8 @@ export default function ProfilePage() {
   const { handle } = useParams<{ handle: string }>();
   const router = useRouter();
   const { user } = useAuth();
-  const [state, reload] = useAsync(() => api.profiles.get(handle), [handle]);
+  const { version } = useApp();
+  const [state, reload] = useAsync(() => api.profiles.get(handle), [handle, version]);
 
   const back = <BackButton onClick={() => (window.history.length > 1 ? router.back() : router.push("/feed"))} />;
 
@@ -25,8 +29,7 @@ export default function ProfilePage() {
     return (
       <div className="mx-auto max-w-[720px] px-6 pt-6 md:px-10 md:pt-10" aria-busy="true">
         {back}
-        <Skeleton className="mt-8 h-[120px] w-[120px]" />
-        <Skeleton className="mt-6 h-10 w-56" />
+        <ProfileSkeleton />
       </div>
     );
   }
@@ -36,11 +39,11 @@ export default function ProfilePage() {
     return (
       <div className="mx-auto max-w-[720px] px-6 pt-6 md:px-10 md:pt-10">
         {back}
-        <ErrorState
-          title={notFound ? "Profile not found." : undefined}
-          body={notFound ? "We could not find anyone by that name in your network." : undefined}
-          onRetry={notFound ? undefined : reload}
-        />
+        {notFound ? (
+          <NotFoundView title="Profile not found." body="We could not find anyone by that name in your network." />
+        ) : (
+          <ErrorState onRetry={reload} />
+        )}
       </div>
     );
   }
@@ -95,12 +98,26 @@ function Friend({ p, youId }: { p: Extract<Profile, { relation: "self" | "friend
           <span className="text-sm text-muted">{p.vouches.length} total</span>
         </div>
         {p.vouches.length === 0 ? (
-          <p className="mt-4 rounded-card bg-surface p-5 text-muted">No vouches yet.</p>
+          <EmptyState
+            tone="lavender"
+            icon={<PlusIcon width={36} height={36} />}
+            title="No vouches yet."
+            body={
+              p.relation === "self"
+                ? "Vouch for a show and it lands here."
+                : `${p.user.name.split(" ")[0]} has not vouched for anything yet.`
+            }
+          />
         ) : (
           <ul className="mt-4 space-y-4">
             {p.vouches.map((v) => (
               <li key={v.vouch.id}>
-                <VouchCard view={v} youId={youId} href={`/show/${v.show.id}`} />
+                <VouchCard
+                  view={v}
+                  youId={youId}
+                  href={`/show/${v.show.id}`}
+                  actions={v.author.id === youId ? <OwnVouchActions view={v} /> : undefined}
+                />
               </li>
             ))}
           </ul>

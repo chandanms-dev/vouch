@@ -23,14 +23,14 @@ function isActive(path: string, href: string) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { status, user } = useAuth();
+  const { status, user, signedOutByUser } = useAuth();
   const { openComposer } = useApp();
   const router = useRouter();
   const path = usePathname();
 
   useEffect(() => {
-    if (status === "signed-out") router.replace("/sign-in");
-  }, [status, router]);
+    if (status === "signed-out") router.replace(signedOutByUser ? "/" : "/sign-in");
+  }, [status, signedOutByUser, router]);
 
   // Detail screens in the Figma export carry no tab bar on mobile.
   const hideTabs = path.startsWith("/show/") || path.startsWith("/u/");
