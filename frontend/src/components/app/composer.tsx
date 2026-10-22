@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { api, type Show } from "@/lib/api";
+import { api, type Show, type Vouch } from "@/lib/api";
 import { cn } from "@/lib/format";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
 import { ChevronRightIcon, CloseIcon, SearchIcon } from "@/components/ui/icons";
-import { IllustrationTile, TypeBadge } from "@/components/ui/primitives";
+import { TypeBadge } from "@/components/ui/primitives";
+import { EmptyState, ErrorState } from "@/components/app/states";
 import { KIND, type VisualKind } from "@/components/ui/kind";
 
 const MAX_REVIEW = 280;
@@ -23,13 +24,17 @@ const CHIPS: { id: string; label: string; kind: VisualKind; active: boolean }[] 
 export function Composer({
   open,
   initialShow,
+  initialVouch,
   onClose,
   onPosted,
 }: {
   open: boolean;
   initialShow?: Show;
+  /** Set to edit one of the viewer's own vouches; the rate step opens prefilled. */
+  initialVouch?: Vouch;
   onClose: () => void;
-  onPosted: () => void;
+  /** `edited` is true when an existing vouch was saved rather than a new one posted. */
+  onPosted: (edited: boolean) => void;
 }) {
   const [show, setShow] = useState<Show | null>(null);
 
@@ -40,7 +45,16 @@ export function Composer({
   return (
     <Sheet open={open} onClose={onClose} label="Add a vouch">
       {show ? (
-        <RateStep key={show.id} show={show} onClose={onClose} onPosted={() => { onPosted(); onClose(); }} />
+        <RateStep
+          key={show.id}
+          show={show}
+          vouch={initialVouch?.showId === show.id ? initialVouch : undefined}
+          onClose={onClose}
+          onPosted={(edited) => {
+            onPosted(edited);
+            onClose();
+          }}
+        />
       ) : (
         <SearchStep onPick={setShow} onClose={onClose} />
       )}
@@ -53,6 +67,7 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
   const [results, setResults] = useState<Show[] | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const typed = query.trim().length;
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -84,7 +99,7 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
       live = false;
       clearTimeout(t);
     };
-  }, [query]);
+  }, [query, attempt]);
 
   return (
     <div className="animate-step-in px-6 pb-6 pt-4 md:pt-6">
@@ -96,7 +111,7 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
         <SheetClose onClick={onClose} />
       </div>
 
-      <div className="-mx-2 mt-2 flex gap-1.5 overflow-x-auto px-2 py-2 scrollbar-none" role="tablist" aria-label="What kind of thing">
+      <div className="-mx-2 mt-2 grid grid-cols-4 gap-1.5 px-2 py-2" role="tablist" aria-label="What kind of thing">
         {CHIPS.map((c) => (
           <button
             key={c.id}
@@ -107,7 +122,7 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
             tabIndex={c.active ? 0 : -1}
             onClick={(e) => !c.active && e.preventDefault()}
             className={cn(
-              "flex shrink-0 flex-col items-center rounded-full px-2.5 py-1 text-[13px] font-extrabold",
+              "flex min-w-0 flex-col items-center justify-center rounded-full px-1 py-1 text-[13px] font-extrabold",
               c.active ? cn("press focus-ring text-ink", KIND[c.kind].field, "ring-2 ring-cream ring-offset-2 ring-offset-surface") : "cursor-not-allowed bg-raised text-muted",
             )}
           >
@@ -148,7 +163,15 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
 
       <div className="mt-4 min-h-[280px]" aria-live="polite">
         {error ? (
-          <p className="py-10 text-center text-muted">Search is not working right now. Try again in a moment.</p>
+          <ErrorState
+            compact
+            title="Search is not working."
+            body="We could not reach the show database. Try again in a moment."
+            onRetry={() => {
+              setError(false);
+              setAttempt((a) => a + 1);
+            }}
+          />
         ) : loading && !results ? (
           <ul className="space-y-2">
             {[0, 1, 2].map((i) => (
@@ -156,17 +179,13 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
             ))}
           </ul>
         ) : results && results.length === 0 ? (
-          <div className="flex flex-col items-center pt-8 text-center animate-fade-in">
-            <IllustrationTile tone="pink" tilt={8} className="h-[88px] w-[88px] rounded-[24px]">
-              <SearchIcon width={36} height={36} />
-            </IllustrationTile>
-            <h3 className="mt-6 max-w-[260px] font-display text-xl font-extrabold leading-6">
-              No shows found for “{query.trim()}”.
-            </h3>
-            <p className="mt-3 max-w-[300px] text-sm text-muted">
-              Check the spelling or try the original title. Not a show? Film, Book and Food are coming soon.
-            </p>
-          </div>
+          <EmptyState
+            compact
+            tone="pink"
+            icon={<SearchIcon width={36} height={36} />}
+            title={`Nothing matches “${query.trim()}”.`}
+            body="Check the spelling or try the original title. Not a show? Film, Book and Food are coming soon."
+          />
         ) : typed > 0 && typed < MIN_QUERY ? (
           <p className="py-12 text-center text-muted">Keep typing…</p>
         ) : results ? (
@@ -214,16 +233,19 @@ function SearchStep({ onPick, onClose }: { onPick: (s: Show) => void; onClose: (
 
 function RateStep({
   show,
+  vouch,
   onClose,
   onPosted,
 }: {
   show: Show;
+  vouch?: Vouch;
   onClose: () => void;
-  onPosted: () => void;
+  onPosted: (edited: boolean) => void;
 }) {
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  const editing = !!vouch;
+  const [rating, setRating] = useState(vouch?.rating ?? 0);
+  const [review, setReview] = useState(vouch?.review ?? "");
+  const [tags, setTags] = useState<string[]>(vouch?.tags ?? []);
   const [addingTag, setAddingTag] = useState(false);
   const [draftTag, setDraftTag] = useState("");
   const [busy, setBusy] = useState(false);
@@ -240,8 +262,9 @@ function RateStep({
     setBusy(true);
     setError(null);
     try {
-      await api.vouches.create({ showId: show.id, rating, review, tags });
-      onPosted();
+      if (vouch) await api.vouches.update(vouch.id, { rating, review, tags });
+      else await api.vouches.create({ showId: show.id, rating, review, tags });
+      onPosted(editing);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not post");
       setBusy(false);
@@ -252,7 +275,9 @@ function RateStep({
     <div className="animate-step-in px-6 pb-6 pt-4 md:pt-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl font-extrabold leading-7">How was {show.title}?</h2>
+          <h2 className="font-display text-2xl font-extrabold leading-7">
+            {editing ? `Edit your vouch for ${show.title}` : `How was ${show.title}?`}
+          </h2>
           <TypeBadge kind={show.kind} onField={false} className="mt-3" />
         </div>
         <SheetClose onClick={onClose} />
@@ -348,7 +373,7 @@ function RateStep({
       )}
 
       <button type="button" disabled={rating === 0 || busy} onClick={post} className="btn-primary mt-6 w-full">
-        {busy ? "Posting…" : "Post vouch"}
+        {busy ? (editing ? "Saving…" : "Posting…") : editing ? "Save changes" : "Post vouch"}
       </button>
       <button type="button" onClick={onClose} className="press focus-ring mt-2 h-12 w-full rounded-full text-base font-extrabold">
         Cancel

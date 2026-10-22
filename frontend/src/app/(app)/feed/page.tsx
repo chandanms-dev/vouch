@@ -7,7 +7,8 @@ import { useApp, useAuth } from "@/components/providers";
 import { AnticipationCard, VouchCard } from "@/components/ui/cards";
 import { Avatar, Logo, Skeleton } from "@/components/ui/primitives";
 import { KIND } from "@/components/ui/kind";
-import { ErrorState } from "@/components/app/states";
+import { EmptyState, ErrorState } from "@/components/app/states";
+import { PlayIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/format";
 
 type Filter = ShowKind | "all";
@@ -132,7 +133,17 @@ export default function FeedPage() {
       {status === "error" && <ErrorState body="We could not load your feed. Check your connection and try again." onRetry={loadFirst} />}
       {noFriendsYet && <QuietFeed onVouch={() => openComposer()} />}
       {isEmpty && !noFriendsYet && (
-        <p className="px-6 py-20 text-center text-muted">Nothing here yet from your friends.</p>
+        <EmptyState
+          tone={filter === "anime" ? "pink" : "lavender"}
+          icon={<PlayIcon width={36} height={36} />}
+          title={`No ${KIND[filter as ShowKind].label} vouches yet.`}
+          body="When your friends vouch for something in this category, it shows up here."
+          action={
+            <button type="button" onClick={() => setFilter("all")} className="btn-outline w-full">
+              Show everything
+            </button>
+          }
+        />
       )}
 
       {status === "ready" && items.length > 0 && (

@@ -140,13 +140,16 @@ export interface CreateVouchInput {
   tags: string[];
 }
 
+export type UpdateVouchInput = Omit<CreateVouchInput, "showId">;
+
 export type ApiErrorCode =
   | "not_found"
   | "unauthenticated"
   | "token_expired"
   | "token_invalid"
   | "invalid"
-  | "forbidden";
+  | "forbidden"
+  | "network";
 
 export class ApiError extends Error {
   constructor(
@@ -191,6 +194,10 @@ export interface VouchApi {
   };
   vouches: {
     create(input: CreateVouchInput): Promise<Vouch>;
+    /** Author only; anyone else gets ApiError forbidden. Keeps the vouch's id and date. */
+    update(id: string, input: UpdateVouchInput): Promise<Vouch>;
+    /** Author only. */
+    remove(id: string): Promise<void>;
     mine(): Promise<VouchView[]>;
   };
   feed: {

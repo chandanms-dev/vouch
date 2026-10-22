@@ -9,6 +9,7 @@ import {
   type Session,
   type Show,
   type ShowKind,
+  type UpdateVouchInput,
   type User,
   type Vouch,
   type VouchApi,
@@ -45,6 +46,43 @@ let idCounter = 100;
 
 const wait = (ms = 220) => new Promise<void>((r) => setTimeout(r, ms));
 const nextId = (p: string) => `${p}${++idCounter}`;
+
+// ---------- dev flags ----------
+
+/**
+ * Prototype switches, read from the URL once per page load and kept for the tab:
+ *  ?fail=1      every data call (feed, detail, profile, search, my vouches) fails; ?fail=0 clears it
+ *  ?fail=once   only the next such call fails, so Retry works
+ *  ?empty=tv | anime | vouches   feed filter / profile vouch lists come back empty; ?empty=0 clears it
+ */
+const DEV_PREFIX = "vouch.dev.";
+let devParsed = false;
+
+function devFlag(name: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    if (!devParsed) {
+      devParsed = true;
+      const params = new URLSearchParams(window.location.search);
+      for (const key of ["fail", "empty"]) {
+        const v = params.get(key);
+        if (v === null) continue;
+        if (v === "0" || v === "") window.sessionStorage.removeItem(DEV_PREFIX + key);
+        else window.sessionStorage.setItem(DEV_PREFIX + key, v);
+      }
+    }
+    return window.sessionStorage.getItem(DEV_PREFIX + name);
+  } catch {
+    return null;
+  }
+}
+
+function failIfRequested() {
+  const f = devFlag("fail");
+  if (!f) return;
+  if (f === "once") window.sessionStorage.removeItem(DEV_PREFIX + "fail");
+  throw new ApiError("network", "Simulated network failure");
+}
 
 // ---------- session helpers ----------
 
@@ -169,6 +207,16 @@ function anticipationView(viewer: string, a: (typeof anticipations)[number]): An
 
 function normaliseTag(t: string) {
   return t.trim().toLowerCase().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "");
+}
+
+function validateVouchInput(input: UpdateVouchInput): string[] {
+  if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 10) {
+    throw new ApiError("invalid", "Rating must be 1 to 10");
+  }
+  if (input.review.length > 280) throw new ApiError("invalid", "Review is too long");
+  const tags = [...new Set(input.tags.map(normaliseTag).filter(Boolean))];
+  if (tags.length > 5) throw new ApiError("invalid", "Max 5 tags");
+  return tags;
 }
 
 // ---------- API ----------
@@ -322,6 +370,7 @@ export const mockApi: VouchApi = {
   shows: {
     async search(query, kind?: ShowKind) {
       await wait(260);
+      failIfRequested();
       const q = query.trim().toLowerCase();
       if (!q) return [];
       return shows
@@ -335,6 +384,7 @@ export const mockApi: VouchApi = {
     },
     async detail(id) {
       await wait(200);
+      failIfRequested();
       const me = requireViewer();
       const show = showById(id);
       const views = vouches
@@ -370,12 +420,7 @@ export const mockApi: VouchApi = {
       await wait(350);
       const me = requireViewer();
       const show = showById(input.showId);
-      if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 10) {
-        throw new ApiError("invalid", "Rating must be 1 to 10");
-      }
-      if (input.review.length > 280) throw new ApiError("invalid", "Review is too long");
-      const tags = [...new Set(input.tags.map(normaliseTag).filter(Boolean))];
-      if (tags.length > 5) throw new ApiError("invalid", "Max 5 tags");
+      const tags = validateVouchInput(input);
       const existing = vouches.findIndex((v) => v.authorId === me.id && v.showId === show.id);
       if (existing >= 0) vouches.splice(existing, 1);
       const vouch: Vouch = {
@@ -390,9 +435,30 @@ export const mockApi: VouchApi = {
       vouches.push(vouch);
       return vouch;
     },
+    async update(id, input) {
+      await wait(350);
+      const me = requireViewer();
+      const v = vouches.find((x) => x.id === id);
+      if (!v) throw new ApiError("not_found");
+      if (v.authorId !== me.id) throw new ApiError("forbidden");
+      v.tags = validateVouchInput(input);
+      v.rating = input.rating;
+      v.review = input.review.trim();
+      return { ...v };
+    },
+    async remove(id) {
+      await wait(300);
+      const me = requireViewer();
+      const i = vouches.findIndex((x) => x.id === id);
+      if (i < 0) throw new ApiError("not_found");
+      if (vouches[i]!.authorId !== me.id) throw new ApiError("forbidden");
+      vouches.splice(i, 1);
+    },
     async mine() {
       await wait(150);
+      failIfRequested();
       const me = requireViewer();
+      if (devFlag("empty") === "vouches") return [];
       return vouches
         .filter((v) => v.authorId === me.id)
         .sort(byNewest)
@@ -403,7 +469,9 @@ export const mockApi: VouchApi = {
   feed: {
     async page(opts) {
       await wait(350);
+      failIfRequested();
       const me = requireViewer();
+      if (opts?.kind && devFlag("empty") === opts.kind) return { items: [], nextCursor: null };
       const limit = opts?.limit ?? 6;
       const direct = friendIds(me.id);
       const items: FeedItem[] = [];
@@ -447,6 +515,7 @@ export const mockApi: VouchApi = {
   profiles: {
     async get(handle) {
       await wait(180);
+      failIfRequested();
       const me = requireViewer();
       const user = users.find((u) => u.handle === handle.toLowerCase());
       if (!user) throw new ApiError("not_found");
@@ -454,7 +523,7 @@ export const mockApi: VouchApi = {
 
       if (user.id === me.id || areFriends(me.id, user.id)) {
         const list = vouches
-          .filter((v) => v.authorId === user.id)
+          .filter((v) => v.authorId === user.id && devFlag("empty") !== "vouches")
           .sort(byNewest)
           .flatMap((v) => {
             const view = toView(me.id, v);

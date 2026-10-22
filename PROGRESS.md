@@ -42,9 +42,22 @@
 - Composer: chip row has padding so the selected outline is not clipped. Film/Book/Food are muted, `aria-disabled`, `tabindex=-1`, `cursor-not-allowed`. Search shows "Keep typing…" under 3 characters; 3+ searches the mock.
 - Verified with Playwright (375 and 1440) and lint/build; no console errors. Playwright is not a repo dependency (run from a scratch folder).
 
+## Session 4: Batch 2, missing flows and states (`batch2-flows-states`)
+
+- Composer: category chips are a 4-column grid (no horizontal scroll at 375px, outline not clipped).
+- Sign out (Me page) clears the mock session and returns to the landing page; signed-out visits to protected routes still redirect to sign-in.
+- Edit / delete own vouch: `api.vouches.update` / `remove` in the mock (author only, `forbidden` otherwise). Edit and Delete buttons appear on your own vouch cards (Me, your profile, and a new "Your vouch" section on show detail). Edit reopens the composer prefilled ("Save changes"). Delete uses a new `ConfirmDialog` (built on `Sheet`).
+- `Sheet` now traps focus (Tab / Shift+Tab cycle) and closes on Esc, closing the earlier P1 "no focus trap" audit item for sheets. Page behind is still not inert.
+- Styled 404 (`app/not-found.tsx`, `NotFoundView`): links home, plus feed when signed in. Unknown show / handle show it too.
+- Error states: `ErrorState` (button now "Retry", `compact` variant) on feed, detail, profile, Me and composer search; Retry re-fetches.
+- Loading: `ShowSkeleton`, `ProfileSkeleton`, `CardSkeleton` mirror the real layouts.
+- Empty states via new `EmptyState`: search ("Nothing matches ..."), profile / Me with no vouches, feed filter with nothing.
+- **Dev toggles** (read from the URL once per load, kept in sessionStorage): `?fail=1` all data calls fail, `?fail=once` next one fails then Retry works, `?fail=0` clears; `?empty=tv|anime` empty feed filter, `?empty=vouches` profiles/Me with no vouches, `?empty=0` clears. Sign in as `empty@vouch.test` for a real zero-vouch Me page.
+- Verified with Playwright at 375 and 1440 (all new states), lint and build pass. The only console "errors" are the browser's own 404 resource lines when opening a genuinely unknown route.
+
 ## Git state
 
-Work is on `init-frontend` (branched from `userstory`), open as PR #1 into `main`. `main` still holds only the initial commit until that is merged.
+Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
 
 ## Next session
 Backend Story 1 (setup). Hand-written by the user; Claude explains and reviews only.

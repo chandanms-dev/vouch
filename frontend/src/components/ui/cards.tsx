@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { AnticipationView, VouchView } from "@/lib/api";
 import { cn, timeAgo } from "@/lib/format";
 import { Avatar, AuthorPill, ScoreBadge, TagPill, TypeBadge } from "./primitives";
@@ -28,12 +29,15 @@ export function VouchCardBody({
   className,
   compact,
   href,
+  actions,
 }: {
   data: CardData;
   className?: string;
   compact?: boolean;
   /** Makes the whole card a link to this show (a stretched link on the title). */
   href?: string;
+  /** Extra controls under the footer, e.g. Edit / Delete on your own vouch. */
+  actions?: ReactNode;
 }) {
   const k = KIND[data.kind];
   const fof = !!data.via;
@@ -79,6 +83,7 @@ export function VouchCardBody({
           {data.timeLabel ?? (data.createdAt ? timeAgo(data.createdAt) : "")}
         </time>
       </footer>
+      {actions}
     </article>
   );
 }
@@ -88,11 +93,13 @@ export function VouchCard({
   youId,
   href,
   className,
+  actions,
 }: {
   view: VouchView;
   youId?: string;
   href?: string;
   className?: string;
+  actions?: ReactNode;
 }) {
   const { vouch, show, author } = view;
   const first = (n: string) => n.split(" ")[0]!;
@@ -101,6 +108,7 @@ export function VouchCard({
     <VouchCardBody
       className={className}
       href={href}
+      actions={actions}
       data={{
         kind: show.kind,
         title: show.title,
