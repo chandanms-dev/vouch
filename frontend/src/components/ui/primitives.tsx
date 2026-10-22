@@ -5,13 +5,13 @@ import { KIND, type VisualKind } from "./kind";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cn("font-display font-extrabold", className)}>
+    <span className={cn("font-display font-extrabold leading-none tracking-[-0.04em]", className)}>
       vouch
     </span>
   );
 }
 
-const AVATAR_SIZES = { xs: "h-5 w-5 text-micro", sm: "h-6 w-6 text-micro", md: "h-9 w-9 text-label", lg: "h-[72px] w-[72px] text-h1", xl: "h-[120px] w-[120px] text-stat" } as const;
+const AVATAR_SIZES = { xs: "h-5 w-5 text-[10px]", sm: "h-6 w-6 text-[11px]", md: "h-9 w-9 text-sm", lg: "h-[72px] w-[72px] text-[32px]", xl: "h-[120px] w-[120px] text-[56px]" } as const;
 
 export function Avatar({
   name,
@@ -52,7 +52,7 @@ export function TypeBadge({ kind, onField = true, className }: { kind: VisualKin
   return (
     <span
       className={cn(
-        "inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-chip font-extrabold",
+        "inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-tag font-extrabold",
         onField ? "bg-ink text-cream" : cn(k.field, "text-ink"),
         className,
       )}
@@ -92,7 +92,7 @@ export function ScoreBadge({ value, size = "lg", tilted = true }: { value: numbe
       style={tilted ? { transform: "rotate(-6deg)" } : undefined}
       className={cn(
         "inline-flex shrink-0 items-center justify-center bg-cream font-display font-extrabold text-ink",
-        size === "lg" ? "h-14 w-14 rounded-[18px] text-stamp" : "h-10 w-10 rounded-xl text-stamp-sm",
+        size === "lg" ? "h-14 w-14 rounded-[18px] text-[28px]" : "h-10 w-10 rounded-xl text-xl",
       )}
     >
       {value}
@@ -129,7 +129,7 @@ export function AuthorPill({
     <span
       className={cn(
         "inline-flex items-center gap-2 rounded-full font-bold",
-        size === "md" ? "h-8 pl-1 pr-3 text-label" : "h-7 pl-1 pr-2.5 text-meta",
+        size === "md" ? "h-8 pl-1 pr-3 text-sm" : "h-7 pl-1 pr-2.5 text-xs",
         fof ? "border-2 border-dashed border-ink bg-cream text-ink" : "bg-ink text-cream",
       )}
     >
@@ -157,7 +157,7 @@ export function AuthorPill({
 }
 
 export function ComingSoon({ className }: { className?: string }) {
-  return <span className={cn("whitespace-nowrap text-micro font-bold leading-none text-lime", className)}>Coming soon</span>;
+  return <span className={cn("whitespace-nowrap text-[11px] font-bold leading-none text-lime", className)}>Coming soon</span>;
 }
 
 /** Tilted tile with an icon; used for empty/error/auth states. */
@@ -183,7 +183,7 @@ export function IllustrationTile({
     >
       {children}
       {label && (
-        <span className="rounded-full bg-ink px-3 py-1 text-meta font-extrabold text-cream">{label}</span>
+        <span className="rounded-full bg-ink px-3 py-1 text-xs font-extrabold text-cream">{label}</span>
       )}
     </div>
   );
@@ -198,7 +198,7 @@ export function BackButton({ onClick, className }: { onClick: () => void; classN
     <button
       type="button"
       onClick={onClick}
-      className={cn("press focus-ring inline-flex h-11 items-center rounded-full bg-surface px-5 text-label font-bold text-cream md:bg-surface", className)}
+      className={cn("press focus-ring inline-flex h-11 items-center rounded-full bg-surface px-5 text-sm font-bold text-cream md:bg-surface", className)}
     >
       Back
     </button>

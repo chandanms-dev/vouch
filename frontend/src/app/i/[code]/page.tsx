@@ -48,13 +48,13 @@ export default function InvitePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-[430px] flex-col px-6 pb-8 pt-16">
       <div className="flex items-center gap-4">
-        <Avatar name={inviter.name} size="xl" className="!h-[88px] !w-[88px] !text-title" />
+        <Avatar name={inviter.name} size="xl" className="!h-[88px] !w-[88px] !text-[40px]" />
         <div>
-          <p className="text-label font-bold">{inviter.name}</p>
-          <p className="text-label text-muted">Sent you an invite</p>
+          <p className="text-sm font-bold">{inviter.name}</p>
+          <p className="text-sm text-muted">Sent you an invite</p>
         </div>
       </div>
-      <h1 className="mt-8 font-display text-title font-extrabold">
+      <h1 className="mt-8 font-display text-[40px] font-extrabold leading-[44px] tracking-tight">
         {inviter.name} invited you to Vouch.
       </h1>
       <p className="mt-4 text-muted">
@@ -77,7 +77,7 @@ export default function InvitePage() {
         <Link href={`/sign-in?invite=${encodeURIComponent(code)}`} className="btn-primary w-full">
           Sign up with email
         </Link>
-        <p className="mt-4 text-center text-label text-muted">
+        <p className="mt-4 text-center text-sm text-muted">
           Already on Vouch?{" "}
           <Link href="/sign-in" className="font-bold text-cream underline underline-offset-4">
             Sign in

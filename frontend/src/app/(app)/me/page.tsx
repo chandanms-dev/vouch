@@ -25,7 +25,7 @@ export default function MePage() {
       <header className="flex items-center gap-4">
         <Avatar name={user.name} size="lg" />
         <div>
-          <h1 className="font-display text-h1 font-extrabold">{user.name}</h1>
+          <h1 className="font-display text-[36px] font-extrabold leading-10 tracking-tight">{user.name}</h1>
           <p className="text-muted">@{user.handle}</p>
         </div>
       </header>
@@ -37,18 +37,18 @@ export default function MePage() {
           aria-disabled="true"
           tabIndex={-1}
           onClick={(e) => e.preventDefault()}
-          className="flex h-12 cursor-not-allowed flex-col items-center justify-center rounded-full bg-raised text-label font-extrabold text-muted"
+          className="flex h-12 cursor-not-allowed flex-col items-center justify-center rounded-full bg-raised text-sm font-extrabold text-muted"
         >
           Edit profile
-          <span className="text-micro font-bold text-muted">Coming soon</span>
+          <span className="text-[11px] font-bold leading-none text-muted">Coming soon</span>
         </button>
-        <Link href="/friends" className="btn-primary h-12 text-label">
+        <Link href="/friends" className="btn-primary h-12 text-sm">
           Friends · {friends.status === "ready" ? friends.data.length : "…"}
         </Link>
       </div>
 
       <section className="mt-8" aria-labelledby="taste-h">
-        <h2 id="taste-h" className="font-display text-h3 font-extrabold">
+        <h2 id="taste-h" className="font-display text-xl font-extrabold">
           My taste
         </h2>
         {user.tags.length === 0 ? (
@@ -66,10 +66,10 @@ export default function MePage() {
 
       <section className="mt-8" aria-labelledby="vouches-h">
         <div className="flex items-baseline justify-between">
-          <h2 id="vouches-h" className="font-display text-h3 font-extrabold">
+          <h2 id="vouches-h" className="font-display text-xl font-extrabold">
             My vouches
           </h2>
-          {vouches.status === "ready" && <span className="text-label text-muted">{vouches.data.length} total</span>}
+          {vouches.status === "ready" && <span className="text-sm text-muted">{vouches.data.length} total</span>}
         </div>
         {vouches.status === "loading" && (
           <div className="mt-4 space-y-4" aria-busy="true" aria-label="Loading your vouches">
@@ -110,7 +110,7 @@ export default function MePage() {
       <button
         type="button"
         onClick={signOut}
-        className="btn-outline mt-10 h-11 w-full text-label"
+        className="btn-outline mt-10 h-11 w-full text-sm"
       >
         Sign out
       </button>
@@ -120,7 +120,7 @@ export default function MePage() {
           await api.demo.reset();
           window.location.assign("/me");
         }}
-        className="press focus-ring mt-3 h-11 w-full rounded-full text-label font-bold text-muted underline underline-offset-4"
+        className="press focus-ring mt-3 h-11 w-full rounded-full text-sm font-bold text-muted underline underline-offset-4"
       >
         Reset demo data
       </button>

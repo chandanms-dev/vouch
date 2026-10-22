@@ -53,11 +53,11 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
 
   const average = (
     <div className="flex items-center gap-3">
-      <span className="font-display text-stat font-extrabold">
+      <span className="font-display text-[56px] font-extrabold leading-none tracking-tight md:text-[56px]">
         {d.friendsAverage ?? "–"}
       </span>
       <div className="text-meta leading-4">
-        <p className="text-label font-bold">friends’ average</p>
+        <p className="text-sm font-bold">friends’ average</p>
         <p>
           {d.friendCount} friend{d.friendCount === 1 ? "" : "s"} · {d.fofCount} friend{d.fofCount === 1 ? "" : "s"} of friends
         </p>
@@ -69,7 +69,7 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
     <>
       {d.myVouch && (
         <section aria-labelledby="mine-h" className="mb-10 md:mb-12">
-          <h2 id="mine-h" className="font-display text-h2 font-extrabold ">
+          <h2 id="mine-h" className="font-display text-[28px] font-extrabold leading-8 md:text-[32px] md:leading-9">
             Your vouch
           </h2>
           <div className="mt-4 md:max-w-[50%]">
@@ -80,14 +80,14 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
       <section aria-labelledby="friends-h">
         <div className="flex items-baseline justify-between">
           <div>
-            <h2 id="friends-h" className="font-display text-h2 font-extrabold">
+            <h2 id="friends-h" className="font-display text-[28px] font-extrabold leading-8 md:text-[32px] md:leading-9">
               Your friends
             </h2>
-            <p className="mt-1 hidden text-label text-muted md:block">
+            <p className="mt-1 hidden text-sm text-muted md:block">
               {d.friendCount} vouch{d.friendCount === 1 ? "" : "es"}
             </p>
           </div>
-          <span className="text-label text-muted md:hidden">
+          <span className="text-sm text-muted md:hidden">
             {d.friendCount} vouch{d.friendCount === 1 ? "" : "es"}
           </span>
         </div>
@@ -105,10 +105,10 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
       </section>
 
       <section aria-labelledby="fof-h" className="mt-10 md:mt-12">
-        <h2 id="fof-h" className="font-display text-h2 font-extrabold">
+        <h2 id="fof-h" className="font-display text-[28px] font-extrabold leading-8 md:text-[32px] md:leading-9">
           Friends of friends
         </h2>
-        <p className="mt-1 text-label text-muted">
+        <p className="mt-1 text-sm text-muted">
           Vouched by people your friends trust. The “via” tag shows who connects you.
         </p>
         {d.fof.length === 0 ? (
@@ -133,8 +133,8 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
         <div className="px-4 pt-6">{back}</div>
         <section className={cn("mt-4 rounded-b-[32px] px-6 pb-8 pt-6 text-ink animate-fade-in", k.field)}>
           <TypeBadge kind={show.kind} />
-          <h1 className="mt-3 font-display text-h1 font-extrabold">{show.title}</h1>
-          <p className="mt-3 text-body">{meta}</p>
+          <h1 className="mt-3 font-display text-[34px] font-extrabold leading-9 tracking-tight">{show.title}</h1>
+          <p className="mt-3 text-base">{meta}</p>
           <div className="mt-5">{total > 0 ? average : <p className="font-semibold">No ratings from your network yet.</p>}</div>
         </section>
         <div className="px-4 pt-8">{sections("grid-cols-1")}</div>
@@ -152,12 +152,12 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
           <div className="space-y-4">
             <section className={cn("rounded-[32px] p-8 text-ink animate-fade-in", k.field)}>
               <TypeBadge kind={show.kind} />
-              <h1 className="mt-4 font-display text-display font-extrabold">{show.title}</h1>
-              <p className="mt-4 text-body">{meta}</p>
+              <h1 className="mt-4 font-display text-[56px] font-extrabold leading-[56px] tracking-tight">{show.title}</h1>
+              <p className="mt-4 text-base">{meta}</p>
 
               {everyone.length > 0 && (
                 <>
-                  <h2 className="mt-14 text-label font-semibold">Who rated it</h2>
+                  <h2 className="mt-14 text-sm font-semibold">Who rated it</h2>
                   <ul className="mt-3 flex flex-wrap gap-2">
                     {everyone.map((v) => {
                       const fof = !!v.author.via;
@@ -166,13 +166,13 @@ function Detail({ d, back, youId }: { d: ShowDetail; back: React.ReactNode; youI
                           <Link
                             href={`/u/${v.author.handle}`}
                             className={cn(
-                              "press focus-ring inline-flex h-9 items-center gap-2 rounded-full bg-cream pl-1 pr-3 text-label font-bold text-ink",
+                              "press focus-ring inline-flex h-9 items-center gap-2 rounded-full bg-cream pl-1 pr-3 text-sm font-bold text-ink",
                               fof && "border-2 border-dashed border-ink",
                             )}
                           >
                             <Avatar name={v.author.name} size="sm" tone={fof ? "ink" : "cream"} className={fof ? "" : "ring-1 ring-ink/20"} />
                             {v.author.name.split(" ")[0]}
-                            <span className="font-display text-body font-extrabold">{v.vouch.rating}</span>
+                            <span className="font-display text-base font-extrabold">{v.vouch.rating}</span>
                           </Link>
                         </li>
                       );

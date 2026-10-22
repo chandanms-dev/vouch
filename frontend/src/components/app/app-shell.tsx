@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col bg-surface px-5 pb-6 pt-8 md:flex">
         <Link href="/feed" className="focus-ring rounded-lg">
-          <Logo className="text-logo" />
+          <Logo className="text-[32px]" />
         </Link>
         <nav aria-label="Main" className="mt-8 flex flex-col gap-1">
           {NAV.map((n) => {
@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 href={n.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "press focus-ring flex h-10 items-center rounded-full px-4 text-label font-bold",
+                  "press focus-ring flex h-10 items-center rounded-full px-4 text-sm font-bold",
                   active ? "bg-raised text-cream" : "text-muted hover:text-cream",
                 )}
               >
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button type="button" onClick={() => openComposer()} className="btn-primary w-full">
             + Vouch
           </button>
-          <Link href="/me" className="focus-ring mt-4 flex items-center gap-2 rounded-full text-label font-bold">
+          <Link href="/me" className="focus-ring mt-4 flex items-center gap-2 rounded-full text-sm font-bold">
             <Avatar name={user.name} size="sm" />
             {user.name}
           </Link>
@@ -105,11 +105,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function TabLink({ item, active }: { item: (typeof NAV)[number]; active: boolean }) {
   return (
-    <Link
+              <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "press focus-ring flex min-h-11 min-w-[64px] flex-col items-center justify-center whitespace-nowrap rounded-full px-3 py-2 text-tag font-bold leading-4",
+                  "press focus-ring flex min-h-11 min-w-[64px] flex-col items-center justify-center whitespace-nowrap rounded-full px-3 py-2 text-[13px] leading-4 font-bold",
         active ? "bg-raised text-cream" : "text-muted",
       )}
     >

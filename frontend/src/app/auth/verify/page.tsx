@@ -37,7 +37,7 @@ function Verify() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-6" aria-busy="true">
-      <p className="font-display text-h2 font-extrabold animate-pulse-soft">Signing you in…</p>
+      <p className="font-display text-2xl font-extrabold animate-pulse-soft">Signing you in…</p>
     </main>
   );
 }

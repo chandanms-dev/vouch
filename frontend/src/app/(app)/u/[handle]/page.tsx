@@ -63,7 +63,7 @@ function Friend({ p, youId }: { p: Extract<Profile, { relation: "self" | "friend
       <header className="mt-6 flex items-center gap-4">
         <Avatar name={p.user.name} size="lg" />
         <div>
-          <h1 className="font-display text-h1 font-extrabold">{p.user.name}</h1>
+          <h1 className="font-display text-[36px] font-extrabold leading-10 tracking-tight">{p.user.name}</h1>
           <p className="text-muted">
             @{p.user.handle} · {p.friendCount} friends
           </p>
@@ -71,7 +71,7 @@ function Friend({ p, youId }: { p: Extract<Profile, { relation: "self" | "friend
       </header>
 
       <section className="mt-8" aria-labelledby="taste-h">
-        <h2 id="taste-h" className="font-display text-h3 font-extrabold">
+        <h2 id="taste-h" className="font-display text-xl font-extrabold">
           Taste you share
         </h2>
         {p.user.tags.length === 0 ? (
@@ -92,10 +92,10 @@ function Friend({ p, youId }: { p: Extract<Profile, { relation: "self" | "friend
 
       <section className="mt-8" aria-labelledby="v-h">
         <div className="flex items-baseline justify-between">
-          <h2 id="v-h" className="font-display text-h3 font-extrabold">
+          <h2 id="v-h" className="font-display text-xl font-extrabold">
             Vouches
           </h2>
-          <span className="text-label text-muted">{p.vouches.length} total</span>
+          <span className="text-sm text-muted">{p.vouches.length} total</span>
         </div>
         {p.vouches.length === 0 ? (
           <EmptyState
@@ -149,19 +149,19 @@ function FriendOfFriend({ p, onChange }: { p: Extract<Profile, { relation: "fof"
 
   return (
     <div className="flex min-h-[calc(100dvh-12rem)] flex-col">
-      <div className="mt-6 flex h-[120px] w-[120px] items-center justify-center rounded-full bg-cream font-display text-stat font-extrabold italic text-ink">
+      <div className="mt-6 flex h-[120px] w-[120px] items-center justify-center rounded-full bg-cream font-display text-[56px] font-extrabold italic text-ink">
         {p.user.name.charAt(0)}
       </div>
-      <h1 className="mt-6 font-display text-page font-extrabold">{p.user.name}</h1>
-      <p className="mt-4 flex items-center gap-2 text-body font-extrabold">
+      <h1 className="mt-6 font-display text-[44px] font-extrabold leading-[48px] tracking-tight">{p.user.name}</h1>
+      <p className="mt-4 flex items-center gap-2 text-base font-extrabold">
         via
-        <Link href={`/u/${p.via.handle}`} className="press focus-ring hit-44 inline-flex items-center gap-2 rounded-full text-label font-bold hover:underline">
+        <Link href={`/u/${p.via.handle}`} className="press focus-ring hit-44 inline-flex items-center gap-2 rounded-full text-sm font-bold hover:underline">
           <Avatar name={p.via.name} size="sm" />
           {p.via.name}
         </Link>
       </p>
 
-      <h2 className="mt-10 font-display text-h2 font-extrabold">Taste you share</h2>
+      <h2 className="mt-10 font-display text-2xl font-extrabold">Taste you share</h2>
       {p.sharedTags.length === 0 ? (
         <p className="mt-3 text-muted">No shared tags yet.</p>
       ) : (

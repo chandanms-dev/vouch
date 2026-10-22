@@ -40,7 +40,7 @@ function Friends() {
   return (
     <div className="mx-auto max-w-[720px] px-6 pb-8 pt-6 md:px-10 md:pt-10">
       <BackButton onClick={() => (window.history.length > 1 ? router.back() : router.push("/me"))} />
-      <h1 className="mt-6 font-display text-title font-extrabold">Friends</h1>
+      <h1 className="mt-6 font-display text-[40px] font-extrabold leading-[44px] tracking-tight">Friends</h1>
 
       <div role="tablist" aria-label="Friends sections" className="mt-4 grid grid-cols-3 rounded-full bg-surface p-1">
         {tabs.map((t) => (
@@ -51,7 +51,7 @@ function Friends() {
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
             className={cn(
-              "press focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-full text-label font-extrabold transition-colors",
+              "press focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-extrabold transition-colors",
               tab === t.id ? "bg-cream text-ink" : "text-cream",
             )}
           >
@@ -59,7 +59,7 @@ function Friends() {
             {t.badge && (
               <span
                 className={cn(
-                  "inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-micro font-extrabold leading-5",
+                  "inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-extrabold leading-5",
                   t.badge.tone === "lime" ? "bg-lime text-ink" : "bg-raised text-cream",
                 )}
               >
@@ -97,7 +97,7 @@ function FriendsTab() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search friends"
-          className="h-12 w-full rounded-2xl bg-surface pl-12 pr-4 text-body text-cream outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-lime"
+          className="h-12 w-full rounded-2xl bg-surface pl-12 pr-4 text-base text-cream outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-lime"
         />
       </label>
       {state.status === "loading" && (
@@ -121,7 +121,7 @@ function FriendsTab() {
                 <Avatar name={user.name} size="md" />
                 <span className="min-w-0">
                   <span className="block font-bold">{user.name}</span>
-                  <span className="block truncate text-label text-muted">
+                  <span className="block truncate text-sm text-muted">
                     @{user.handle}
                     {user.tags.length > 0 && ` · ${user.tags.slice(0, 2).join(", ")}`}
                   </span>
@@ -164,7 +164,7 @@ function RequestsTab({
 
   return (
     <div className="mt-6">
-      <h2 className="font-display text-h3 font-extrabold">Wants to be friends</h2>
+      <h2 className="font-display text-xl font-extrabold">Wants to be friends</h2>
       {incoming.length === 0 ? (
         <p className="mt-3 text-muted">No requests right now.</p>
       ) : (
@@ -175,7 +175,7 @@ function RequestsTab({
                 <Avatar name={r.user.name} size="md" />
                 <span>
                   <span className="block font-bold">{r.user.name}</span>
-                  <span className="block text-label text-muted">
+                  <span className="block text-sm text-muted">
                     @{r.user.handle}
                     {r.user.via && ` · via ${r.user.via.name.split(" ")[0]}`}
                   </span>
@@ -186,7 +186,7 @@ function RequestsTab({
                   type="button"
                   disabled={busyId === r.id}
                   onClick={() => act(r.id, "accept", r.user.name.split(" ")[0]!)}
-                  className="btn-primary h-11 text-label"
+                  className="btn-primary h-11 text-sm"
                 >
                   Accept
                 </button>
@@ -194,7 +194,7 @@ function RequestsTab({
                   type="button"
                   disabled={busyId === r.id}
                   onClick={() => act(r.id, "decline", r.user.name)}
-                  className="btn-outline h-11 text-label"
+                  className="btn-outline h-11 text-sm"
                 >
                   Decline
                 </button>
@@ -204,7 +204,7 @@ function RequestsTab({
         </ul>
       )}
 
-      <h2 className="mt-8 font-display text-h3 font-extrabold">Sent by you</h2>
+      <h2 className="mt-8 font-display text-xl font-extrabold">Sent by you</h2>
       {outgoing.length === 0 ? (
         <p className="mt-3 text-muted">Nothing pending.</p>
       ) : (
@@ -215,12 +215,12 @@ function RequestsTab({
                 <Avatar name={r.user.name} size="md" />
                 <span>
                   <span className="block font-bold">{r.user.name}</span>
-                  <span className="block text-label text-muted">
+                  <span className="block text-sm text-muted">
                     @{r.user.handle} · {r.sentLabel}
                   </span>
                 </span>
               </div>
-              <span className="inline-flex h-7 items-center rounded-full border-2 border-muted px-3 text-meta font-extrabold text-muted">
+              <span className="inline-flex h-7 items-center rounded-full border-2 border-muted px-3 text-xs font-extrabold text-muted">
                 Pending
               </span>
             </li>
@@ -263,12 +263,12 @@ function InviteTab() {
   return (
     <div className="mt-6">
       <div className="-rotate-2 rounded-3xl bg-lime p-5 text-ink">
-        <p className="text-label font-semibold">Your invite link</p>
-        <p className="mt-2 flex items-center gap-2 font-display text-h3 font-extrabold">
+        <p className="text-sm font-semibold">Your invite link</p>
+        <p className="mt-2 flex items-center gap-2 font-display text-xl font-extrabold">
           <LinkIcon width={20} height={20} className="shrink-0" />
           <span className="break-all">{url ?? "…"}</span>
         </p>
-        <p className="mt-3 text-label">
+        <p className="mt-3 text-sm">
           Works for {invite.status === "ready" ? invite.data.expiresInDays : 7} days. Share it with people you actually know.
         </p>
       </div>
@@ -281,7 +281,7 @@ function InviteTab() {
         </button>
       </div>
 
-      <h2 className="mt-8 font-display text-h3 font-extrabold">Invites you sent</h2>
+      <h2 className="mt-8 font-display text-xl font-extrabold">Invites you sent</h2>
       {sent.status === "loading" && <Skeleton className="mt-3 h-16 !rounded-2xl" />}
       {sent.status === "ready" && sent.data.length === 0 && <p className="mt-3 text-muted">You have not invited anyone yet.</p>}
       {sent.status === "ready" && (
@@ -292,12 +292,12 @@ function InviteTab() {
                 <Avatar name={i.name} size="md" />
                 <span>
                   <span className="block font-bold">{i.name}</span>
-                  <span className="block text-label text-muted">{i.label}</span>
+                  <span className="block text-sm text-muted">{i.label}</span>
                 </span>
               </div>
               <span
                 className={cn(
-                  "inline-flex h-7 items-center rounded-full px-3 text-meta font-extrabold",
+                  "inline-flex h-7 items-center rounded-full px-3 text-xs font-extrabold",
                   i.status === "joined" ? "bg-lime text-ink" : "border-2 border-muted text-muted",
                 )}
               >

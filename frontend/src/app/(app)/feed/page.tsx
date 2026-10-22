@@ -113,17 +113,17 @@ export default function FeedPage() {
   return (
     <div className="mx-auto max-w-[1200px] md:px-10 md:pt-10">
       {/* Mobile header */}
-      <header className="flex items-center justify-between px-4 pb-1 pt-4 md:hidden">
+      <header className="flex items-center justify-between px-4 pb-3 pt-6 md:hidden">
         <h1 className="sr-only">Your feed</h1>
-        <Logo className="text-logo" />
-        <Link href="/me" aria-label="Your profile" className="press focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full">
+        <Logo className="text-[32px]" />
+        <Link href="/me" aria-label="Your profile" className="press focus-ring -my-1 inline-flex h-11 w-11 items-center justify-center rounded-full">
           <Avatar name={user.name} size="md" />
         </Link>
       </header>
       {/* Desktop header */}
       <header className="hidden items-end justify-between md:flex">
         <div>
-          <h1 className="font-display text-page font-extrabold">Your feed</h1>
+          <h1 className="font-display text-[44px] font-extrabold leading-[48px] tracking-tight">Your feed</h1>
           <p className="mt-1 text-muted">What your friends loved this week</p>
         </div>
         {!noFriendsYet && chips}
@@ -172,7 +172,7 @@ export default function FeedPage() {
                 Could not load more. Try again
               </button>
             )}
-            {!cursor && !moreError && <span className="text-label text-muted">You are all caught up.</span>}
+            {!cursor && !moreError && <span className="text-sm text-muted">You are all caught up.</span>}
           </div>
         </>
       )}
@@ -239,20 +239,20 @@ function QuietFeed({ onVouch }: { onVouch: () => void }) {
           </div>
         ))}
       </div>
-      <h2 className="mt-6 font-display text-heading font-extrabold">Your feed is quiet.</h2>
-      <p className="mt-4 text-lead text-muted">
+      <h2 className="mt-6 font-display text-[36px] font-extrabold leading-10 tracking-tight">Your feed is quiet.</h2>
+      <p className="mt-4 text-lg leading-7 text-muted">
         Vouch only shows what your friends recommend. Invite two friends and the first vouches land here.
       </p>
-      <div className="mt-6 flex h-[52px] items-center justify-between rounded-2xl bg-raised pl-4 pr-4 text-label font-bold">
+      <div className="mt-6 flex h-[52px] items-center justify-between rounded-2xl bg-raised pl-4 pr-4 text-sm font-bold">
         <span className="truncate">{invite?.url ?? "…"}</span>
-        <button type="button" onClick={copy} className="press focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded px-1 font-extrabold text-lime">
+            <button type="button" onClick={copy} className="press focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded px-1 font-extrabold text-lime">
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
       <Link href="/friends?tab=invite" className="btn-primary mt-3 w-full">
         Invite friends
       </Link>
-      <button type="button" onClick={onVouch} className="btn-outline mt-3 w-full">
+            <button type="button" onClick={onVouch} className="btn-outline mt-3 w-full">
         Vouch something first
       </button>
     </section>
