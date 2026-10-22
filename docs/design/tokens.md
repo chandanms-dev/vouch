@@ -24,9 +24,30 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 - **Bricolage Grotesque** (700/800): wordmark, titles, scores.
 - **Nunito Sans** (400/600/700/800): body, buttons, meta.
 
-## Type scale
+## Type scale (applied)
 
-> **Measured from the PNG exports, not from Figma** (Figma MCP was unavailable). Method: ink bounding boxes (width and height) of known strings in `02 Feed`, `04 Content detail`, `Me`, `Button`, `Desktop/Feed 1440` and `Desktop/Content detail 1440` (all at 1x), matched against the same strings rendered in Chrome with Bricolage Grotesque / Nunito Sans at 100px. Sizes are good to about ±1px (anti-aliasing adds roughly 1px to every edge, so ambiguous values were rounded down). Line heights were **not measurable** from glyph boxes except for the 24px review pitch; the rest keep the earlier estimates. Display tracking is inferred from width versus height and is the least certain value. Defined in `frontend/tailwind.config.ts` as named `text-*` styles; use these, never ad-hoc `text-[Npx]`.
+The app uses the earlier estimates below, kept because the measured values (next section) looked worse in the real UI. Named styles in `frontend/tailwind.config.ts`: `text-hero` 72/72, `text-hero-sm` 44/44, `text-h1` 32/36, `text-h2` 24/28, `text-card` 22/28, `text-meta` 12/16, `text-tag` 13/16. Other sizes use Tailwind's defaults (`text-sm` 14/20, `text-base` 16/24, `text-lg` 18/28, `text-xl` 20/28, `text-2xl` 24/32) or an explicit `text-[Npx]` with `leading-*` and `tracking-*`, exactly as before PR #4.
+
+| Role | Font | Size / line | Weight |
+| --- | --- | --- | --- |
+| Landing hero (desktop) | Bricolage | 76 / 72, -0.03em | 800 |
+| Landing hero (mobile) | Bricolage | 44 / 44 | 800 |
+| Section title (landing) | Bricolage | 44 / 44 desktop, 36 / 40 mobile | 800 |
+| Page title (desktop feed, FoF name) | Bricolage | 44 / 48, tight | 800 |
+| Profile name, Me | Bricolage | 36 / 40, tight | 800 |
+| Show title | Bricolage | 34 / 36 mobile, 56 / 56 desktop | 800 |
+| Section title (show detail) | Bricolage | 28 / 32 mobile, 32 / 36 desktop | 800 |
+| Card title | Bricolage | 22 / 28 | 800 |
+| Score | Bricolage | 28 (small 20) | 800 |
+| Body / review | Nunito Sans | 16 / 24 | 400 |
+| Meta line, timestamps | Nunito Sans | 12 / 16 | 400 |
+| Tag pill | Nunito Sans | 13 / 16 | 600 |
+| Button | Nunito Sans | 16 / 24 | 800 |
+| Badge | Nunito Sans | 13 / 16 | 800 |
+
+## Measured type scale (reference only, not applied)
+
+> **Measured from the PNG exports, not from Figma** (Figma MCP was unavailable). Method: ink bounding boxes (width and height) of known strings in `02 Feed`, `04 Content detail`, `Me`, `Button`, `Desktop/Feed 1440` and `Desktop/Content detail 1440` (all at 1x), matched against the same strings rendered in Chrome with Bricolage Grotesque / Nunito Sans at 100px. Sizes are good to about ±1px (anti-aliasing adds roughly 1px to every edge, so ambiguous values were rounded down). Line heights were **not measurable** from glyph boxes except for the 24px review pitch; the rest keep the earlier estimates. Display tracking is inferred from width versus height and is the least certain value. **These values are not used by the app.** They were applied in PR #4 and reverted: the measured sizes looked worse in the real UI (cramped card titles, tighter line heights, landing collage cards touching), because the exports are PNGs at 1x and the line heights and tracking could not be measured. The names in the table are not defined in `tailwind.config.ts`.
 
 | Style (`text-*`) | Font / weight | Size / line | Tracking | Used for | Measured as |
 | --- | --- | --- | --- | --- | --- |
@@ -49,7 +70,7 @@ Cards: friends = solid field colour, ink text. Friends-of-friends = `surface` fi
 
 Marketing-only styles used on the landing page and **not measured** from a screen export: `hero` 76/72, `hero-md` 64/60, `hero-sm` 44/44, `title` 40/44 (auth titles), `heading` 36/40, `stamp-lg` 48, `logo` 32 (wordmark in app chrome), `wordmark` 96, `ghost` 300 and `ghost-sm` 132 (decorative word). Buttons: 52px pill, `body` at 800 (small: `label` at 800).
 
-Corrections versus the earlier estimates: card meta and timestamps were 12px, measured 13; type badge was 13, measured 14; section titles were 28/32 on mobile and 32/36 on desktop, measured 24 on both (the desktop export matches mobile); show title on desktop was 56, measured 60; profile name was 36, measured 32.
+Differences versus the applied (older) values: card meta and timestamps were 12px, measured 13; type badge was 13, measured 14; section titles were 28/32 on mobile and 32/36 on desktop, measured 24 on both (the desktop export matches mobile); show title on desktop was 56, measured 60; profile name was 36, measured 32.
 
 ## Shape and spacing
 
@@ -67,6 +88,6 @@ Corrections versus the earlier estimates: card meta and timestamps were 12px, me
 
 ## Still unconfirmed (not in Foundations)
 
-1. Line heights (only the 24px review pitch was measurable) and display tracking; sizes are measured from exports, see Type scale.
+1. Type sizes, line heights and tracking are estimates; the PNG-measured set is kept only as a reference.
 2. Radius and shadow values (none visible; shadows assumed none).
 3. Hover/pressed/disabled colours.
