@@ -34,3 +34,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local env files: never commit values; only the template is tracked
+.env*
+!.env.example
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
