@@ -74,6 +74,16 @@
 - Verified: computed font-size / line-height / letter-spacing / weight of 1022 text runs across landing, feed, show, Me, Friends, profile and sign-in at 375 and 1440 match pre-PR #4 except 5 runs that are new elements (screen-reader h1, Reset demo data, Edit profile chip). Lint, build and the a11y audit (0 blocking findings) pass.
 - Kept from Batch 3: persistence and Reset demo data, toast queueing, inert dialogs, 44px targets, heading fixes, reduced motion, Edit profile chip, 1024px show-detail layout.
 
+## Session 7: Batch 4, backend-ready frontend and CI (`batch4-api-ci`) - frontend done
+
+- `docs/api-contract.md`: 24 endpoints derived from the mock (method, path, query, DTOs, status codes, error shape `{ code, message, traceId }`, visibility rules, cookie flags, "Mock vs real" table).
+- API client switch: `NEXT_PUBLIC_API_BASE_URL` set = real fetch client (`lib/api/http.ts`), unset = mock (default). Same `VouchApi` interface; pages only gate mock-only UI (Open email app button, empty-state link, Reset demo data) on `isMockApi` / `api.demo`. `.env.example` only; `.env*` is ignored.
+- Real client auth: access token in memory only, `credentials: "include"` everywhere, refresh cookie httpOnly, one shared refresh + one retry on 401, then clear state and go to `/sign-in`. Checked against a fake `fetch` (`e2e/http-client.spec.ts`), not against a real server.
+- Playwright (`@playwright/test`, `frontend/e2e`): smoke tests at 375 and 1440px (`npm run e2e`), API client tests, and the axe audit as a test at 375/1024/1440px (`npm run a11y`, replaces `scripts/a11y-audit.mjs`). Run `npm run build` first; set `PW_CHANNEL=chrome` to use a local Chrome instead of the downloaded Chromium.
+- `.github/workflows/ci.yml` (PR and push to main): npm ci, lint, typecheck, build, Playwright, axe; npm cache; report artifact on failure. `.github/dependabot.yml`: npm (frontend) and github-actions, weekly, minor/patch grouped.
+- **Your action:** turn on **secret scanning and push protection** in the repo Settings > Code security. I cannot do this from the repo.
+- **Next:** backend Story 1 (hand-written by you). The contract in `docs/api-contract.md` is the target; the vouch-exists (409) and `sentLabel` points in its "Mock vs real" table are worth settling first.
+
 ## Git state
 
 Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
