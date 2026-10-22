@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/format";
 import { CloseIcon } from "./icons";
+import { registerDialog } from "./dialog-state";
 
 const EXIT_MS = 220;
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -28,6 +29,7 @@ export function Sheet({
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ startY: number; startT: number; id: number } | null>(null);
 
   useEffect(() => {
@@ -68,7 +70,17 @@ export function Sheet({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     panelRef.current?.focus();
+    const unregister = registerDialog();
+    // Make the page behind inert: no focus, clicks or screen-reader access.
+    const inerted: Element[] = [];
+    for (const el of Array.from(document.body.children)) {
+      if (el === rootRef.current || el.tagName === "SCRIPT" || el.hasAttribute("inert")) continue;
+      el.setAttribute("inert", "");
+      inerted.push(el);
+    }
     return () => {
+      unregister();
+      inerted.forEach((el) => el.removeAttribute("inert"));
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
       prevFocus?.focus?.();
@@ -106,7 +118,7 @@ export function Sheet({
   if (!mounted || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
+    <div ref={rootRef} className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
       <div
         onClick={onClose}
         aria-hidden
@@ -120,6 +132,7 @@ export function Sheet({
         role="dialog"
         aria-modal="true"
         aria-label={label}
+        data-shown={shown ? "" : undefined}
         tabIndex={-1}
         className={cn(
           "relative flex max-h-[92dvh] w-full flex-col overflow-y-auto rounded-t-[32px] bg-surface text-cream outline-none",

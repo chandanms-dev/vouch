@@ -55,6 +55,17 @@
 - **Dev toggles** (read from the URL once per load, kept in sessionStorage): `?fail=1` all data calls fail, `?fail=once` next one fails then Retry works, `?fail=0` clears; `?empty=tv|anime` empty feed filter, `?empty=vouches` profiles/Me with no vouches, `?empty=0` clears. Sign in as `empty@vouch.test` for a real zero-vouch Me page.
 - Verified with Playwright at 375 and 1440 (all new states), lint and build pass. The only console "errors" are the browser's own 404 resource lines when opening a genuinely unknown route.
 
+## Session 5: Batch 3, quality pass (`batch3-quality`)
+
+- **Type scale** measured from the PNG exports (ink widths/heights matched against Chrome renders of the real fonts; not Figma), written to `docs/design/tokens.md` and `tailwind.config.ts` as named `text-*` styles (`display`, `page`, `h1`, `h2`, `card`, `h3`, `stat`, `stamp`, `body`, `body-sm`, `label`, `chip`, `meta`, `tag`, `micro`; marketing-only styles are listed separately as not measured). Every ad-hoc `text-sm/xl/[Npx]` was replaced. Corrections: card meta and timestamps 13 (was 12), type badge 14, section titles 24 on mobile and desktop (were 28/32), detail title 60 on desktop, profile name 32.
+- **Persistence:** mock state (users, vouches, friendships, requests, anticipations) is stored in localStorage under `vouch.demo.v1`, all access guarded, falling back to memory. Sign-in already persisted. "Reset demo data" on Me restores the seed.
+- Toasts wait while any dialog/sheet is open (`dialog-state.ts`), then show.
+- Edit profile is a disabled "Coming soon" chip (`aria-disabled`, not focusable).
+- **Accessibility:** page behind a sheet/dialog is `inert`; 44px tap targets on mobile (real size, or a `.hit-44` pseudo-element hit area for pills; links inside sentences are exempt); one h1 per page and ordered headings (mobile feed has a screen-reader h1; feed cards are h2; decorative landing cards have no heading); `ErrorState` / `EmptyState` take a heading level; Me-too options are a proper radiogroup. axe contrast was clean (muted on ink is 9.9:1).
+- `npm run a11y` (`scripts/a11y-audit.mjs`, dev deps `@axe-core/playwright`, `playwright-core`; needs the app running) audits 30 routes/states at 375, 1024 and 1440: axe WCAG A/AA + best-practice, h1, heading order, tap targets and keyboard focus. Last run: 0 blocking findings, no console errors.
+- **Reduced motion:** entrances become opacity-only (so tilted stamps and tiles never move), sheets fade instead of sliding, skeleton pulse stops, press scale off. Replaces the old 1ms duration hack.
+- **Desktop check (1024/1440):** show detail was crushed at 1024 (side panel + two card columns); now one column until 1360px. "Me too" no longer wraps on narrow anticipation cards. New dev flag `?fail=more` (load-more error); `?fail=1` now also fails the Friends page.
+
 ## Git state
 
 Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).

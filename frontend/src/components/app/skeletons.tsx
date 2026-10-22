@@ -44,7 +44,7 @@ export function ShowSkeleton({ back }: { back: React.ReactNode }) {
       </div>
       <div className="mx-auto hidden max-w-[1200px] px-10 pt-10 md:block">
         {back}
-        <div className="mt-6 grid grid-cols-[400px_1fr] items-start gap-10">
+        <div className="mt-6 grid grid-cols-[320px_1fr] min-[1360px]:grid-cols-[400px_1fr] items-start gap-10">
           <section className="rounded-[32px] bg-surface p-8">
             <Skeleton className="h-7 w-20" />
             <Skeleton className="mt-4 h-14 w-3/4" />
@@ -59,12 +59,12 @@ export function ShowSkeleton({ back }: { back: React.ReactNode }) {
           </section>
           <div>
             <Skeleton className="h-9 w-48" />
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 min-[1360px]:grid-cols-2">
               <CardSkeleton />
               <CardSkeleton />
             </div>
             <Skeleton className="mt-12 h-9 w-56" />
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 min-[1360px]:grid-cols-2">
               <CardSkeleton />
               <CardSkeleton />
             </div>

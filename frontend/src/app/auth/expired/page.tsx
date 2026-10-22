@@ -28,7 +28,7 @@ export default function ExpiredPage() {
       <IllustrationTile tone="pink" tilt={6} label="Expired" className="mx-auto h-40 w-36 rounded-[28px] animate-pop-in">
         <ClockIcon />
       </IllustrationTile>
-      <h1 className="mt-16 font-display text-[40px] font-extrabold leading-[44px] tracking-tight">That link has expired.</h1>
+      <h1 className="mt-16 font-display text-title font-extrabold">That link has expired.</h1>
       <p className="mt-4 text-muted">
         Magic links work once and last 15 minutes. Send a new one to {email || "your email"} and tap it on this phone.
       </p>
