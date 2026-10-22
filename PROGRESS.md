@@ -84,6 +84,18 @@
 - **Your action:** turn on **secret scanning and push protection** in the repo Settings > Code security. I cannot do this from the repo.
 - **Next:** backend Story 1 (hand-written by you). The contract in `docs/api-contract.md` is the target; the vouch-exists (409) and `sentLabel` points in its "Mock vs real" table are worth settling first.
 
+## Session 8: Batch 4.1, contract decisions (`batch4.1-contract-decisions`)
+
+- **Two-hop feed:** mock and contract now return direct friends (solid) and friends of friends (existing FoF card, "author · via friend") with `relation: "friend" | "fof"` and `via`; never your own vouches; anticipations still from direct friends. `CLAUDE.md` visibility rule updated to match.
+- **Auth cookie** `Path=/auth`; logout is `POST /auth/logout` (client and contract updated). Behind the `/api` proxy the browser-visible path is `/api/auth`, so the backend cookie path must be configurable (documented).
+- **409 on duplicate vouch** in the mock; the composer looks up your vouches when you pick a show and opens an existing one in edit mode.
+- **Timestamps:** `sentAt` / `joinedAt` ISO strings replace `sentLabel` / `SentInvite.label`; formatted in `lib/format.ts`.
+- **Show-kind rule** documented: anime = TMDB genre 16 and origin_country JP, else TV.
+- **Averages:** `friendsAverage` (direct) and `networkAverage` (direct + FoF), both on show detail in existing styles.
+- **Same-origin proxy:** `next.config.mjs` rewrites `/api/*` to `NEXT_PUBLIC_API_BASE_URL` (must be an absolute http(s) URL); the real client calls `/api`. Checked against a stub backend: path stripping, query, `Authorization`, `Cookie` and `Set-Cookie` all pass through, and session restore works.
+- **Lazy mock:** `import("./mock")` on first use, written as a conditional expression so the build drops it when the real API is selected. Verified: with the variable set, no mock code or seed data is in `.next` (client or server).
+- Tests: smoke tests for the two-hop feed, edit-mode on duplicate, both averages and formatted times; API client tests for `/auth/logout` and the `/api` base. 33 e2e + 90 axe checks pass.
+
 ## Git state
 
 Work lands on `main` through PRs (#1 Session 2, #2 Batch 1, #3 Batch 2).
